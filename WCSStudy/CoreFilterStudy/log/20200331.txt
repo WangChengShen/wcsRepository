@@ -1,0 +1,44 @@
+2020-03-31 22:55:45,509 [1] INFO  Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager - User profile is available. Using 'C:\Users\wangchengshen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2020-03-31 22:56:30,840 [1] INFO  Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager - User profile is available. Using 'C:\Users\wangchengshen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2020-03-31 22:56:31,538 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: https://localhost:5001
+2020-03-31 22:56:31,547 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5000
+2020-03-31 22:56:31,555 [1] INFO  Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+2020-03-31 22:56:31,561 [1] INFO  Microsoft.Hosting.Lifetime - Hosting environment: Development
+2020-03-31 22:56:31,568 [1] INFO  Microsoft.Hosting.Lifetime - Content root path: F:\学习\2020-03-08\WCSStudy\CoreFilterStudy
+2020-03-31 22:56:32,628 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/  
+2020-03-31 22:56:32,693 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-31 22:56:32,861 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller CoreFilterStudy.Controllers.HomeController (CoreFilterStudy).
+2020-03-31 22:56:33,033 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executing action method CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) - Validation state: Valid
+2020-03-31 22:57:08,874 [9] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/home/testorder  
+2020-03-31 22:57:08,940 [9] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.TestOrder (CoreFilterStudy)'
+2020-03-31 22:57:08,980 [9] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Route matched with {action = "TestOrder", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult TestOrder() on controller CoreFilterStudy.Controllers.HomeController (CoreFilterStudy).
+2020-03-31 22:57:15,866 [9] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executing action method CoreFilterStudy.Controllers.HomeController.TestOrder (CoreFilterStudy) - Validation state: Valid
+2020-03-31 22:57:15,870 [4] ERROR CoreFilterStudy.Filter.CustomExceptionFilterAttribute - 路径：/，错误信息：Attempted to divide by zero.
+2020-03-31 22:57:15,907 [9] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action method CoreFilterStudy.Controllers.HomeController.TestOrder (CoreFilterStudy), returned result Microsoft.AspNetCore.Mvc.ViewResult in 3.5974ms.
+2020-03-31 22:57:15,919 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor - Executing JsonResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2020-03-31 22:57:15,998 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) in 43110.8794ms
+2020-03-31 22:57:16,033 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executed endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-31 22:57:16,057 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 43432.869ms 200 application/json; charset=utf-8
+2020-03-31 22:57:16,088 [9] INFO  Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor - Executing ViewResult, running view TestOrder.
+2020-03-31 22:57:16,485 [9] INFO  Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor - Executed ViewResult - view TestOrder executed in 452.6858ms.
+2020-03-31 22:57:16,534 [9] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action CoreFilterStudy.Controllers.HomeController.TestOrder (CoreFilterStudy) in 7526.3754ms
+2020-03-31 22:57:16,554 [9] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executed endpoint 'CoreFilterStudy.Controllers.HomeController.TestOrder (CoreFilterStudy)'
+2020-03-31 22:57:16,562 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/lib/bootstrap/dist/js/bootstrap.bundle.min.js  
+2020-03-31 22:57:16,566 [5] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/js/site.js?v=4q1jwFhaPaZgr8WAUSrux6hAuh0XDg9kPS3xIVq36I0  
+2020-03-31 22:57:16,563 [12] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/css/site.css  
+2020-03-31 22:57:16,579 [9] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 7702.0775ms 200 text/html; charset=utf-8
+2020-03-31 22:57:16,655 [9] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/lib/jquery/dist/jquery.min.js  
+2020-03-31 22:57:16,746 [5] INFO  Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware - The file /js/site.js was not modified
+2020-03-31 22:57:16,751 [4] INFO  Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware - The file /lib/bootstrap/dist/js/bootstrap.bundle.min.js was not modified
+2020-03-31 22:57:16,748 [9] INFO  Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware - The file /lib/jquery/dist/jquery.min.js was not modified
+2020-03-31 22:57:16,761 [5] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 196.504ms 304 application/javascript
+2020-03-31 22:57:16,769 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 212.911ms 304 application/javascript
+2020-03-31 22:57:16,778 [9] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 163.2022ms 304 application/javascript
+2020-03-31 22:57:16,752 [12] INFO  Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware - The file /css/site.css was not modified
+2020-03-31 22:57:16,788 [5] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/lib/bootstrap/dist/css/bootstrap.min.css  
+2020-03-31 22:57:16,819 [12] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 264.3973ms 304 text/css
+2020-03-31 22:57:16,866 [5] INFO  Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware - The file /lib/bootstrap/dist/css/bootstrap.min.css was not modified
+2020-03-31 22:57:16,874 [5] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 88.6345ms 304 text/css
+2020-03-31 22:57:17,570 [11] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/favicon.ico  
+2020-03-31 22:57:17,642 [11] INFO  Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware - Sending file. Request path: '/favicon.ico'. Physical path: 'F:\学习\2020-03-08\WCSStudy\CoreFilterStudy\wwwroot\favicon.ico'
+2020-03-31 22:57:17,650 [11] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 79.8113ms 200 image/x-icon

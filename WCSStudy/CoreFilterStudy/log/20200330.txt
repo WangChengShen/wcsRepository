@@ -1,0 +1,170 @@
+2020-03-30 22:36:07,917 [1] INFO  Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager - User profile is available. Using 'C:\Users\wangchengshen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2020-03-30 22:36:08,306 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: https://localhost:5001
+2020-03-30 22:36:08,316 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5000
+2020-03-30 22:36:08,326 [1] INFO  Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+2020-03-30 22:36:08,332 [1] INFO  Microsoft.Hosting.Lifetime - Hosting environment: Development
+2020-03-30 22:36:08,341 [1] INFO  Microsoft.Hosting.Lifetime - Content root path: F:\学习\2020-03-08\WCSStudy\CoreFilterStudy
+2020-03-30 22:36:09,275 [5] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/  
+2020-03-30 22:36:09,326 [5] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 22:36:09,532 [5] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller CoreFilterStudy.Controllers.HomeController (CoreFilterStudy).
+2020-03-30 22:36:09,757 [5] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executing action method CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) - Validation state: Valid
+2020-03-30 22:36:12,967 [5] ERROR CoreFilterStudy.Filter.CustomExceptionFilterAttribute - 路径：/，错误信息：Attempted to divide by zero.
+2020-03-30 22:36:12,981 [5] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor - Executing JsonResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2020-03-30 22:36:13,013 [5] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) in 3456.754ms
+2020-03-30 22:36:13,047 [5] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executed endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 22:36:13,063 [5] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 3796.4428ms 200 application/json; charset=utf-8
+2020-03-30 22:37:43,258 [1] INFO  Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager - User profile is available. Using 'C:\Users\wangchengshen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2020-03-30 22:37:43,659 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: https://localhost:5001
+2020-03-30 22:37:43,669 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5000
+2020-03-30 22:37:43,677 [1] INFO  Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+2020-03-30 22:37:43,738 [1] INFO  Microsoft.Hosting.Lifetime - Hosting environment: Development
+2020-03-30 22:37:43,749 [1] INFO  Microsoft.Hosting.Lifetime - Content root path: F:\学习\2020-03-08\WCSStudy\CoreFilterStudy
+2020-03-30 22:37:44,276 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/  
+2020-03-30 22:37:44,350 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 22:37:44,469 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller CoreFilterStudy.Controllers.HomeController (CoreFilterStudy).
+2020-03-30 22:37:44,559 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executing action method CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) - Validation state: Valid
+2020-03-30 22:37:48,216 [4] ERROR CoreFilterStudy.Filter.CustomExceptionFilterAttribute - 路径：/，错误信息：Attempted to divide by zero.
+2020-03-30 22:37:48,232 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor - Executing JsonResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2020-03-30 22:37:48,272 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) in 3775.7255ms
+2020-03-30 22:37:48,300 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executed endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 22:37:48,326 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 4051.9485ms 200 application/json; charset=utf-8
+2020-03-30 22:54:27,319 [1] INFO  Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager - User profile is available. Using 'C:\Users\wangchengshen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2020-03-30 22:54:27,634 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: https://localhost:5001
+2020-03-30 22:54:27,647 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5000
+2020-03-30 22:54:27,658 [1] INFO  Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+2020-03-30 22:54:27,674 [1] INFO  Microsoft.Hosting.Lifetime - Hosting environment: Development
+2020-03-30 22:54:27,684 [1] INFO  Microsoft.Hosting.Lifetime - Content root path: F:\学习\2020-03-08\WCSStudy\CoreFilterStudy
+2020-03-30 22:54:28,234 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/  
+2020-03-30 22:54:28,299 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 22:55:04,275 [1] INFO  Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager - User profile is available. Using 'C:\Users\wangchengshen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2020-03-30 22:55:04,628 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: https://localhost:5001
+2020-03-30 22:55:04,639 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5000
+2020-03-30 22:55:04,646 [1] INFO  Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+2020-03-30 22:55:04,654 [1] INFO  Microsoft.Hosting.Lifetime - Hosting environment: Development
+2020-03-30 22:55:04,661 [1] INFO  Microsoft.Hosting.Lifetime - Content root path: F:\学习\2020-03-08\WCSStudy\CoreFilterStudy
+2020-03-30 22:55:05,194 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/  
+2020-03-30 22:55:05,227 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 22:55:05,307 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller CoreFilterStudy.Controllers.HomeController (CoreFilterStudy).
+2020-03-30 22:55:05,404 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executing action method CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) - Validation state: Valid
+2020-03-30 22:55:08,693 [4] ERROR CoreFilterStudy.Filter.CustomExceptionFilterAttribute - 路径：/，错误信息：Attempted to divide by zero.
+2020-03-30 22:55:08,707 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor - Executing JsonResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2020-03-30 22:55:08,739 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) in 3412.363ms
+2020-03-30 22:55:08,802 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executed endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 22:55:08,831 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 3646.8426ms 200 application/json; charset=utf-8
+2020-03-30 22:55:25,851 [1] INFO  Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager - User profile is available. Using 'C:\Users\wangchengshen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2020-03-30 22:55:26,209 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: https://localhost:5001
+2020-03-30 22:55:26,220 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5000
+2020-03-30 22:55:26,228 [1] INFO  Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+2020-03-30 22:55:26,237 [1] INFO  Microsoft.Hosting.Lifetime - Hosting environment: Development
+2020-03-30 22:55:26,245 [1] INFO  Microsoft.Hosting.Lifetime - Content root path: F:\学习\2020-03-08\WCSStudy\CoreFilterStudy
+2020-03-30 22:55:26,739 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/  
+2020-03-30 22:55:26,773 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 22:55:26,849 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executed endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 22:55:26,932 [4] ERROR Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware - An unhandled exception has occurred while executing the request.
+System.InvalidOperationException: The 'CreateInstance' method of type 'IFilterFactory' cannot return a null value.
+   at Microsoft.AspNetCore.Mvc.Filters.DefaultFilterProvider.ProvideFilter(FilterProviderContext context, FilterItem filterItem)
+   at Microsoft.AspNetCore.Mvc.Filters.DefaultFilterProvider.OnProvidersExecuting(FilterProviderContext context)
+   at Microsoft.AspNetCore.Mvc.Filters.FilterFactory.CreateUncachedFiltersCore(IFilterProvider[] filterProviders, ActionContext actionContext, List`1 filterItems)
+   at Microsoft.AspNetCore.Mvc.Filters.FilterFactory.GetAllFilters(IFilterProvider[] filterProviders, ActionContext actionContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvokerCache.GetCachedResult(ControllerContext controllerContext)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvokerProvider.OnProvidersExecuting(ActionInvokerProviderContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionInvokerFactory.CreateInvoker(ActionContext actionContext)
+   at Microsoft.AspNetCore.Mvc.Routing.ActionEndpointFactory.<>c__DisplayClass7_0.<CreateRequestDelegate>b__0(HttpContext context)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.Invoke(HttpContext httpContext)
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2020-03-30 22:55:27,045 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 277.5453ms 500 text/html; charset=utf-8
+2020-03-30 23:16:30,457 [1] INFO  Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager - User profile is available. Using 'C:\Users\wangchengshen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2020-03-30 23:16:30,781 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: https://localhost:5001
+2020-03-30 23:16:30,792 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5000
+2020-03-30 23:16:30,800 [1] INFO  Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+2020-03-30 23:16:30,808 [1] INFO  Microsoft.Hosting.Lifetime - Hosting environment: Development
+2020-03-30 23:16:30,815 [1] INFO  Microsoft.Hosting.Lifetime - Content root path: F:\学习\2020-03-08\WCSStudy\CoreFilterStudy
+2020-03-30 23:16:31,427 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/  
+2020-03-30 23:16:31,486 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 23:16:31,612 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller CoreFilterStudy.Controllers.HomeController (CoreFilterStudy).
+2020-03-30 23:16:31,724 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executing action method CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) - Validation state: Valid
+2020-03-30 23:16:34,882 [4] ERROR CoreFilterStudy.Filter.CustomExceptionFilterAttribute - 路径：/，错误信息：Attempted to divide by zero.
+2020-03-30 23:16:34,900 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor - Executing JsonResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2020-03-30 23:16:34,998 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) in 3324.9504ms
+2020-03-30 23:16:35,018 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executed endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 23:16:35,045 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 3624.6634ms 200 application/json; charset=utf-8
+2020-03-30 23:16:45,000 [7] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/home/index3  
+2020-03-30 23:16:45,113 [7] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy)'
+2020-03-30 23:16:45,158 [7] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Route matched with {action = "Index3", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index3() on controller CoreFilterStudy.Controllers.HomeController (CoreFilterStudy).
+2020-03-30 23:16:45,189 [7] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executing action method CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy) - Validation state: Valid
+2020-03-30 23:16:45,210 [7] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action method CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy), returned result Microsoft.AspNetCore.Mvc.ViewResult in 0.8871ms.
+2020-03-30 23:16:45,302 [7] INFO  Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor - Executing ViewResult, running view Index3.
+2020-03-30 23:16:45,554 [7] INFO  Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor - Executed ViewResult - view Index3 executed in 290.7967ms.
+2020-03-30 23:16:45,581 [7] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy) in 412.3574ms
+2020-03-30 23:16:45,591 [11] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/lib/bootstrap/dist/css/bootstrap.min.css  
+2020-03-30 23:16:45,600 [7] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executed endpoint 'CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy)'
+2020-03-30 23:16:45,629 [10] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/css/site.css  
+2020-03-30 23:16:45,630 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/js/site.js?v=4q1jwFhaPaZgr8WAUSrux6hAuh0XDg9kPS3xIVq36I0  
+2020-03-30 23:16:45,642 [7] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 638.8703ms 200 text/html; charset=utf-8
+2020-03-30 23:16:45,696 [7] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/lib/bootstrap/dist/js/bootstrap.bundle.min.js  
+2020-03-30 23:16:45,698 [9] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/lib/jquery/dist/jquery.min.js  
+2020-03-30 23:16:45,801 [4] INFO  Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware - Sending file. Request path: '/js/site.js'. Physical path: 'F:\学习\2020-03-08\WCSStudy\CoreFilterStudy\wwwroot\js\site.js'
+2020-03-30 23:16:45,818 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 188.2836ms 200 application/javascript
+2020-03-30 23:16:45,834 [10] INFO  Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware - Sending file. Request path: '/css/site.css'. Physical path: 'F:\学习\2020-03-08\WCSStudy\CoreFilterStudy\wwwroot\css\site.css'
+2020-03-30 23:16:45,849 [10] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 220.9003ms 200 text/css
+2020-03-30 23:16:45,884 [11] INFO  Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware - Sending file. Request path: '/lib/bootstrap/dist/css/bootstrap.min.css'. Physical path: 'F:\学习\2020-03-08\WCSStudy\CoreFilterStudy\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css'
+2020-03-30 23:16:45,926 [11] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 315.2393ms 200 text/css
+2020-03-30 23:16:45,999 [11] INFO  Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware - Sending file. Request path: '/lib/bootstrap/dist/js/bootstrap.bundle.min.js'. Physical path: 'F:\学习\2020-03-08\WCSStudy\CoreFilterStudy\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js'
+2020-03-30 23:16:46,014 [4] INFO  Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware - Sending file. Request path: '/lib/jquery/dist/jquery.min.js'. Physical path: 'F:\学习\2020-03-08\WCSStudy\CoreFilterStudy\wwwroot\lib\jquery\dist\jquery.min.js'
+2020-03-30 23:16:46,024 [11] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 322.334ms 200 application/javascript
+2020-03-30 23:16:46,034 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 336.7211ms 200 application/javascript
+2020-03-30 23:16:46,225 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/favicon.ico  
+2020-03-30 23:16:46,271 [9] INFO  Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware - Sending file. Request path: '/favicon.ico'. Physical path: 'F:\学习\2020-03-08\WCSStudy\CoreFilterStudy\wwwroot\favicon.ico'
+2020-03-30 23:16:46,295 [9] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 59.5199ms 200 image/x-icon
+2020-03-30 23:17:58,074 [1] INFO  Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager - User profile is available. Using 'C:\Users\wangchengshen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2020-03-30 23:17:58,508 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: https://localhost:5001
+2020-03-30 23:17:58,521 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5000
+2020-03-30 23:17:58,536 [1] INFO  Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+2020-03-30 23:17:58,550 [1] INFO  Microsoft.Hosting.Lifetime - Hosting environment: Development
+2020-03-30 23:17:58,579 [1] INFO  Microsoft.Hosting.Lifetime - Content root path: F:\学习\2020-03-08\WCSStudy\CoreFilterStudy
+2020-03-30 23:17:58,940 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/  
+2020-03-30 23:17:59,034 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 23:17:59,117 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller CoreFilterStudy.Controllers.HomeController (CoreFilterStudy).
+2020-03-30 23:17:59,251 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executing action method CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) - Validation state: Valid
+2020-03-30 23:18:01,439 [4] ERROR CoreFilterStudy.Filter.CustomExceptionFilterAttribute - 路径：/，错误信息：Attempted to divide by zero.
+2020-03-30 23:18:01,456 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor - Executing JsonResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2020-03-30 23:18:01,560 [4] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) in 2363.1832ms
+2020-03-30 23:18:01,579 [4] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executed endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 23:18:01,598 [4] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 2662.0362ms 200 application/json; charset=utf-8
+2020-03-30 23:18:05,939 [11] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/home/index3  
+2020-03-30 23:18:05,958 [11] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy)'
+2020-03-30 23:18:05,988 [11] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Route matched with {action = "Index3", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index3() on controller CoreFilterStudy.Controllers.HomeController (CoreFilterStudy).
+2020-03-30 23:18:06,039 [11] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executing action method CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy) - Validation state: Valid
+2020-03-30 23:18:06,071 [11] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action method CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy), returned result Microsoft.AspNetCore.Mvc.ViewResult in 3.744ms.
+2020-03-30 23:18:06,119 [11] INFO  Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor - Executing ViewResult, running view Index3.
+2020-03-30 23:18:06,295 [11] INFO  Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor - Executed ViewResult - view Index3 executed in 168.5733ms.
+2020-03-30 23:18:06,346 [11] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy) in 330.0122ms
+2020-03-30 23:18:06,372 [11] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executed endpoint 'CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy)'
+2020-03-30 23:18:06,419 [11] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 455.663ms 200 text/html; charset=utf-8
+2020-03-30 23:18:49,833 [1] INFO  Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager - User profile is available. Using 'C:\Users\wangchengshen\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2020-03-30 23:18:50,217 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: https://localhost:5001
+2020-03-30 23:18:50,228 [1] INFO  Microsoft.Hosting.Lifetime - Now listening on: http://localhost:5000
+2020-03-30 23:18:50,244 [1] INFO  Microsoft.Hosting.Lifetime - Application started. Press Ctrl+C to shut down.
+2020-03-30 23:18:50,255 [1] INFO  Microsoft.Hosting.Lifetime - Hosting environment: Development
+2020-03-30 23:18:50,263 [1] INFO  Microsoft.Hosting.Lifetime - Content root path: F:\学习\2020-03-08\WCSStudy\CoreFilterStudy
+2020-03-30 23:18:50,895 [7] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/  
+2020-03-30 23:18:50,977 [7] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 23:18:51,095 [7] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller CoreFilterStudy.Controllers.HomeController (CoreFilterStudy).
+2020-03-30 23:18:51,204 [7] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executing action method CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) - Validation state: Valid
+2020-03-30 23:18:53,350 [7] ERROR CoreFilterStudy.Filter.CustomExceptionFilterAttribute - 路径：/，错误信息：Attempted to divide by zero.
+2020-03-30 23:18:53,364 [7] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.SystemTextJsonResultExecutor - Executing JsonResult, writing value of type '<>f__AnonymousType0`2[[System.Boolean, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2020-03-30 23:18:53,408 [7] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy) in 2277.1532ms
+2020-03-30 23:18:53,429 [7] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executed endpoint 'CoreFilterStudy.Controllers.HomeController.Index (CoreFilterStudy)'
+2020-03-30 23:18:53,456 [7] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 2564.0679ms 200 application/json; charset=utf-8
+2020-03-30 23:19:02,626 [10] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request starting HTTP/2 GET https://localhost:5001/home/index3  
+2020-03-30 23:19:02,644 [10] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executing endpoint 'CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy)'
+2020-03-30 23:19:02,662 [10] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Route matched with {action = "Index3", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index3() on controller CoreFilterStudy.Controllers.HomeController (CoreFilterStudy).
+2020-03-30 23:19:02,696 [10] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executing action method CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy) - Validation state: Valid
+2020-03-30 23:19:02,711 [10] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action method CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy), returned result Microsoft.AspNetCore.Mvc.ViewResult in 0.9993ms.
+2020-03-30 23:19:02,742 [10] INFO  Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor - Executing ViewResult, running view Index3.
+2020-03-30 23:19:02,865 [10] INFO  Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor - Executed ViewResult - view Index3 executed in 132.9947ms.
+2020-03-30 23:19:02,897 [10] INFO  Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker - Executed action CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy) in 219.2937ms
+2020-03-30 23:19:02,912 [10] INFO  Microsoft.AspNetCore.Routing.EndpointMiddleware - Executed endpoint 'CoreFilterStudy.Controllers.HomeController.Index3 (CoreFilterStudy)'
+2020-03-30 23:19:02,942 [10] INFO  Microsoft.AspNetCore.Hosting.Diagnostics - Request finished in 308.1831ms 200 text/html; charset=utf-8

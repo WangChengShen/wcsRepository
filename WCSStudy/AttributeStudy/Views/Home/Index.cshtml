@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    function addStu() {
+        console.log(1);
+        var data = {
+            "Id": 1,
+            "Name": "张三",
+            "Age": 11,
+            "Handset": "1511111111122"
+        };
+        $.post("/Home/AddStudent", data, function (result) {
+            console.log(JSON.stringify(result));
+        })
+    }
+</script>
+<div>
+    LogDefault:@ViewBag.LogDefault
+    Microsoft:@ViewBag.Microsoft
+</div>
+<input type="button" value="添加按钮" onclick="addStu()" />
