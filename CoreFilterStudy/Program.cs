@@ -24,8 +24,8 @@ namespace CoreFilterStudy
                 configureLogging.AddFilter("Microsoft", LogLevel.Warning);
                 configureLogging.AddFilter("System", LogLevel.Warning);
 
-                configureLogging.AddFilter("Microsoft", LogLevel.Information);
-                configureLogging.AddFilter("System", LogLevel.Information);
+                //configureLogging.AddFilter("Microsoft", LogLevel.Information);
+                //configureLogging.AddFilter("System", LogLevel.Information);
 
                 //Ìí¼ÓMicrosoft.Extensions.Logging.Log4Net.AspNetCore°ü
                 configureLogging.AddLog4Net();

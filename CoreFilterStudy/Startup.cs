@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CoreFilterStudy.Filter;
+using CoreFilterStudy.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -24,6 +25,7 @@ namespace CoreFilterStudy
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCaching();
             services.AddControllersWithViews();
 
             //全部注册CustomExceptionFilter过滤器,此时即使CustomExceptionFilterAttribute构造是需要参数，在这里也是可以的
@@ -36,7 +38,9 @@ namespace CoreFilterStudy
             //使用TypeFilter把CustomExceptionFilterAttribute打到方法或控制器上时不用注册
             //通过继承IFilterTactory实现，也要在这里进行注册
             services.AddTransient<CustomExceptionFilterAttribute>();
+            services.AddTransient<ErrorViewModel>();
 
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +59,7 @@ namespace CoreFilterStudy
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-
+            app.UseResponseCaching();
             app.UseRouting();
 
             app.UseAuthorization();
