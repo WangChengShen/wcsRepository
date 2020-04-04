@@ -64,6 +64,9 @@ namespace MiddleWareWeb.utility
 
     }
 
+    /// <summary>
+    /// 对IApplicationBuilder进行扩展
+    /// </summary>
     public static class RefuseStealingMiddleWareExition
     {
         public static IApplicationBuilder UseRefuseStealing(this IApplicationBuilder app)
