@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Wcs.BLL\Wcs.BLL.csproj" />
+    <ProjectReference Include="..\Wcs.Common\Wcs.Common.csproj" />
+    <ProjectReference Include="..\Wcs.DAL\Wcs.DAL.csproj" />
+    <ProjectReference Include="..\Wcs.Models\Wcs.Models.csproj" />
+  </ItemGroup>
+
+</Project>

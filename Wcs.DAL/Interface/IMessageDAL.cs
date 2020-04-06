@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Wcs.Models.Interface
+namespace Wcs.DAL
 {
-    public interface IMessageService
+    public interface IMessageDAL
     {
         void Send();
     }

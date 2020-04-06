@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Wcs.Models.Interface;
+using System.Text; 
 
-namespace Wcs.Models
+namespace Wcs.DAL
 {
-    public class EmailService : IMessageService
+    public class EmailDAL : IMessageDAL
     {
         public void Send()
         {

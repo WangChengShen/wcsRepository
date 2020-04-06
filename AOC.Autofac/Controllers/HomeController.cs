@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AOC.Autofac.Models;
-using Wcs.Models.Interface;
+using Wcs.DAL;
 
 namespace AOC.Autofac.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IMessageService _imessageService;
-        public HomeController(ILogger<HomeController> logger, IMessageService imessageService)
+        private readonly IMessageDAL _imessageService;
+        public HomeController(ILogger<HomeController> logger, IMessageDAL imessageService)
         {
             _logger = logger;
             _imessageService = imessageService;

@@ -151,6 +151,16 @@ namespace AttributeStudy
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            //app.UseStaticFiles(new StaticFileOptions()  //指定静态文件的地址，用命令进行托管的时候，要执行下，不然找不到样式
+            //{
+            //    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot")),
+            //    //OnPrepareResponse = c =>
+            //    //{
+            //    //    c.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "no-cache";
+            //    //}
+            //});
+            
+
 
             //使用session
             app.UseSession();
