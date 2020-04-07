@@ -1,6 +1,7 @@
 ﻿using CustomIOC.Unility;
 using System;
 using Wcs.BLL;
+using Wcs.Common;
 using Wcs.DAL;
 
 namespace CustomIOC
@@ -21,6 +22,7 @@ namespace CustomIOC
             //单接口多实现
             container.Register<IMessageDAL, SmsDAL>("smsDAL");
             container.Register<IMessageDAL, EmailDAL>("emailDAL");
+            container.Register<IStudentDAL, StudentDAL>();
 
             //解析
             IUserDAL iuserDAL = container.Resolve<IUserDAL>();
@@ -49,6 +51,30 @@ namespace CustomIOC
              在此还要引入一个新的知识点，参数也是可以打标记的（WcsParameterAttribute）
              */
             IUserBLL iuserBLL2 = container.Resolve<IUserBLL>();//解析IUserBLL需要参数
+
+            /*
+             IOC+Aop 利用Castle手写实现
+             */
+
+            Console.WriteLine("*********************IOC+Aop 利用Castle手写实现*********************");
+            IStudentDAL iStudentDAL = container.Resolve<IStudentDAL>();
+
+            //用扩展方法实现Aop,这样对这个接口里面的所有的发方法都会前后加逻辑
+            IStudentDAL istudentDAL_aop = (IStudentDAL)iStudentDAL.AOP(typeof(IStudentDAL));
+            istudentDAL_aop.Study(new Wcs.Models.StudentModel() { Name = "张三" });
+            istudentDAL_aop.Run(new Wcs.Models.StudentModel() { Name = "张三" });
+
+            /*这样扩展出的Aop实现，有局限性，所有的逻辑就都会在IocIntercetor的方法里面
+             为了更灵活，实现MVC过滤器的那样灵活，就要引入特性,请看 public static class AopExtend的AOP扩展方法
+             */
+
+            /*
+             AOP方法封装之后，可以直接和IOC融合，把CustomIOCContainer的Resolve方法返回实体的时候
+             后面加上.AOP方法即可，这样整个框架就都支持AOP了,
+             把上面调用AOP可以直接注释掉，在下面进行验证
+             */
+            iStudentDAL.Run(new Wcs.Models.StudentModel() { Name = "张三" });
+
         }
     }
 }

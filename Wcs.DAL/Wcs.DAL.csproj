@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Wcs.Common\Wcs.Common.csproj" />
     <ProjectReference Include="..\Wcs.Models\Wcs.Models.csproj" />
   </ItemGroup>
 

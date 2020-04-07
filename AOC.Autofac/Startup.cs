@@ -10,9 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Wcs.DAL;
-using Wcs.Models;
-using Wcs.Models.Interface;
-
+using Wcs.Models; 
 namespace AOC.Autofac
 {
     public class Startup

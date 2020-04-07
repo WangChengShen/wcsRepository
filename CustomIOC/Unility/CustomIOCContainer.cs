@@ -127,7 +127,8 @@ namespace CustomIOC.Unility
             }
             #endregion
 
-            return instance;
+            // return instance;
+            return instance.AOP(t);
         }
 
 
