@@ -18,9 +18,9 @@ namespace CoreFilterStudy.Filter
             1.此过滤器全局注册，不要加到Controller和方法上面
             2.使用 ServiceFilter 特性 (记得在startUp的ConfigureService注册下CustomExceptionFilterAttribute)
             3.使用TypeFilter 特性（此特性不用在ConfigureService里面进行注册）
-            4.IFilterFactory 通过集成接口自己实现，稍微麻烦（和ServiceFilter原理差不多，实现请看CustomFilterFactoryAttribute，也要在startUp的ConfigureService注册下CustomExceptionFilterAttribute）
+            4.IFilterFactory 通过集成接口自己实现，稍微麻烦（和ServiceFilter原理差不多，实现请看CustomFilterFactoryAttribute，也要在startUp的ConfigureService注册下CustomExceptionFilterAttribute）（简单理解，有点复杂，不太推荐）
 
-            SerciceFilter是第4种的封装，TypeFilter在此基础又进一步，但本质上2,3,4是一样的
+            ServiceFilter是第4种的封装，TypeFilter在此基础又进一步，但本质上2,3,4是一样的
         */
         private readonly ILogger<CustomExceptionFilterAttribute> _logger;
         public CustomExceptionFilterAttribute(ILogger<CustomExceptionFilterAttribute> logger)
