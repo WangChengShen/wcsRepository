@@ -40,6 +40,14 @@ namespace SwaggerTest
                 });
             });
 
+            //设置允许跨域，所有的请求，需要add一下，use一下，然后可以在控制器或方法上打EnableCors("any")标签
+            services.AddCors(m => m.AddPolicy("any",
+                a => a.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+
+            //简单设置缓存，ResponseCache如果直接用是浏览器缓存；
+            //如果add,use 一下就会变成服务端的缓存 
+            services.AddResponseCaching();
+
             services.AddTransient<IStudentDAL, StudentDAL>();
             services.AddTransient<IStudentBLL, StudentBLL>();
 
@@ -66,6 +74,13 @@ namespace SwaggerTest
                 //一个小坑，第一个参数中的v1要和上面的ConfigureServices方法的v1一样
                 option.SwaggerEndpoint("/swagger/v1/swagger.json", "swaggerTest");
             });
+
+
+            //跨域
+            app.UseCors();
+
+            //服务端缓存
+            app.UseResponseCaching();
 
             app.UseEndpoints(endpoints =>
             {

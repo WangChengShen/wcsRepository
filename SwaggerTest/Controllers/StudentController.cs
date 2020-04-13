@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Wcs.BLL;
@@ -9,6 +10,7 @@ using Wcs.Models;
 
 namespace SwaggerTest.Controllers
 {
+    [EnableCors("any")]//设置允许跨域
     [ApiController]
     [Route("api/[controller]")]
     public class StudentController : ControllerBase
@@ -21,6 +23,15 @@ namespace SwaggerTest.Controllers
             _logger = logger;
             this.istudentBLL = istudentBLL;
         }
+
+        [ResponseCache(Duration = 600)]
+        [HttpGet]
+        [Route("GetData")]
+        public int GetData()
+        {
+            return 1;
+        }
+
 
         /// <summary>
         /// 根据Id获取
