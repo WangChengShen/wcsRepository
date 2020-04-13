@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Wcs.BLL\Wcs.BLL.csproj" />
+    <ProjectReference Include="..\Wcs.DAL\Wcs.DAL.csproj" />
+    <ProjectReference Include="..\Wcs.Models\Wcs.Models.csproj" />
+  </ItemGroup>
+
+
+</Project>

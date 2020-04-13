@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Wcs.BLL.Interface;
+using System.Text; 
 using Wcs.DAL;
 using Wcs.Models;
 
@@ -14,6 +13,17 @@ namespace Wcs.BLL
         {
             this.istudentDAL = istudentDAL;
         }
+
+        public StudentModel GetById(int id)
+        {
+            return istudentDAL.GetById(id);
+        }
+
+        public List<StudentModel> GetStudentList()
+        {
+            return istudentDAL.GetStudentList();
+        }
+
         public void Run(StudentModel model)
         {
             istudentDAL.Run(model);

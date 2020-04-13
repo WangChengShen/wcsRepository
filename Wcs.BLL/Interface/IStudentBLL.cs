@@ -13,5 +13,9 @@ namespace Wcs.BLL
         [LogAfter]
         [LogBefore]
         void Run(StudentModel model);
+
+        StudentModel GetById(int id);
+
+        List<StudentModel> GetStudentList();
     }
 }
