@@ -344,3 +344,5 @@ healthchecksdb
 /Gk.NewBpo.Web/Areas/BpoService
 /Gk.NewBpo.Api/logdir
 /Gk.NewBpo.Api/logdir
+/publish
+/Files
