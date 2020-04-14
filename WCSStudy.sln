@@ -47,10 +47,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aop.Castle", "Aop.Castle\Aop.Castle.csproj", "{8A5FD478-0B9C-4240-AFA2-3136B811AB52}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MicroService", "MicroService", "{5DD3AE18-3D32-4771-B5F4-86834F80C089}"
-	ProjectSection(SolutionItems) = preProject
-		Files\consult.png = Files\consult.png
-		Files\微服务.txt = Files\微服务.txt
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroService.AuthenticationCenter", "MicroService.AuthenticationCenter\MicroService.AuthenticationCenter.csproj", "{B2FB8C7A-50E4-40C7-A814-C450E31F27FC}"
 EndProject
@@ -64,7 +60,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroService.ServiceInstanc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwaggerTest", "SwaggerTest\SwaggerTest.csproj", "{B60EC487-334A-4038-80C7-ABBA700665EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroService.GatewayDemo", "MicroService.GatewayDemo\MicroService.GatewayDemo.csproj", "{C095C067-8141-42F4-A470-DA0430471889}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroService.GatewayDemo", "MicroService.GatewayDemo\MicroService.GatewayDemo.csproj", "{C095C067-8141-42F4-A470-DA0430471889}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
