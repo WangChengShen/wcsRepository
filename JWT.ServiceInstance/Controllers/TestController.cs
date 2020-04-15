@@ -2,22 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication;
+//using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
-namespace Wcs.MicroService.ServiceInstance.Controllers
+namespace JWT.ServiceInstance.Controllers
 {
-    [Route("api/[controller]")]
+
+    [Microsoft.AspNetCore.Authorization.Authorize] //添加了JWT授权，控制器下面的接口都要验证授权，如果其中一个接口想不验证，则打上AllowAnonymous特性
     [ApiController]
+    [Route("api/[controller]")]
     public class TestController : ControllerBase
     {
+        private readonly ILogger<TestController> _logger;
         private IConfiguration _iConfiguration;
-        public TestController(IConfiguration iConfiguration)
+        public TestController(ILogger<TestController> logger, IConfiguration iConfiguration)
         {
+            _logger = logger;
             _iConfiguration = iConfiguration;
         }
+
+        [Microsoft.AspNetCore.Authorization.AllowAnonymous]
         [HttpGet]
         [Route("Index")]
         public IActionResult Index()
@@ -42,19 +49,22 @@ namespace Wcs.MicroService.ServiceInstance.Controllers
         /// 在ajax访问可以像图站点内图片bearer_autu.png一样进行访问
         /// </summary>
         /// <returns></returns>
-        [Authorize]
         [HttpGet]
         [Route("IndexA")]
         public IActionResult IndexA()
         {
-            Console.WriteLine($"This is TestController  {this._iConfiguration["port"]} Invoke");
+            //在这里可以拿到token里面加密的payload的信息，验证过会把信息放到HttpContext里面，像下面一样进行获取
+            string nickName = HttpContext.AuthenticateAsync().Result.Principal.Claims.FirstOrDefault(c => c.Type == "NickName")?.Value;
+
+            Console.WriteLine($"This is TestController  {this._iConfiguration["port"]} Invoke，nickName={nickName}");
 
             return new JsonResult(new
             {
-                message = "This is TestControllerIndex",
+                message = $"This is TestControllerIndex，nickName={nickName}",
                 Port = this._iConfiguration["port"],
                 Time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff")
             });
         }
+
     }
 }
