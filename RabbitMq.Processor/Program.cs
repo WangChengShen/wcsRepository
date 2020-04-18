@@ -32,7 +32,9 @@ namespace RabbitMq.Processor
                 //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20 --queue=SMSQueue
                 //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20 --queue=EmailQueue
                 //发布订阅模式，订阅哪个队列处理哪个队列的消息
-                receive2(id, queueName);
+                //receive2(id, queueName);
+
+                receive1_rpc(id, timeSpan);
             }
             catch (Exception ex)
             {
@@ -80,6 +82,62 @@ namespace RabbitMq.Processor
                         {
                             Console.WriteLine(ex.Message);
                         }
+                    }
+                }
+            }
+            #endregion
+        }
+
+        static void receive1_rpc(string id, int timeSpan)
+        {
+            #region 生产者消费者
+            {
+                #region ConnectionFactory
+                var factory = new ConnectionFactory();
+                factory.HostName = "192.168.1.69";//RabbitMQ服务在本地运行
+                factory.UserName = "gkbpo";//用户名
+                factory.Password = "gkbpo123";//密码
+                factory.VirtualHost = "newbpo";
+                #endregion
+
+                using (var connection = factory.CreateConnection())
+                {
+                    using (var channel = connection.CreateModel())
+                    { 
+                        try
+                        {
+                            var consumer = new EventingBasicConsumer(channel);
+                            consumer.Received += (model, ea) =>
+                            { 
+                                //接受消息
+                                var body = ea.Body;
+                                var message = Encoding.UTF8.GetString(body);
+                                Console.WriteLine($"消费者{id} 接受消息: {message},corrId={ea.BasicProperties.CorrelationId}"); //{Thread.CurrentThread.ManagedThreadId}
+                                Thread.Sleep(timeSpan);
+
+                                //回复消息，把回复放入到回复队列中
+                                IBasicProperties props = ea.BasicProperties;
+                                IBasicProperties replyProps = channel.CreateBasicProperties();
+                                replyProps.CorrelationId = props.CorrelationId;
+                                 
+                                string resMsg = $"消息（{replyProps.CorrelationId}）:" + new Random().Next(10);
+                                var responseBytes = Encoding.UTF8.GetBytes(resMsg);
+                                channel.BasicPublish("", props.ReplyTo, replyProps, responseBytes);//注意，回复是交换机名称为空
+                                Console.WriteLine($"回复消息：{resMsg}");
+                            };
+
+                            //注意（之前理解有误）：取消息的时候不绑定交换机，根据队列取就可以了
+                            channel.BasicConsume(queue: "OrderOnly",
+                                         autoAck: true,
+                                         consumer: consumer);
+                            Console.WriteLine(" Press [enter] to exit.");
+                            Console.ReadLine();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                         
                     }
                 }
             }
