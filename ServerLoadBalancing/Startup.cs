@@ -28,6 +28,7 @@ namespace ServerLoadBalancing
             services.AddSession();
 
             //Redis简单的一个包，nuget引入 Microsoft.Extensions.Caching.Redis
+            //此NuGet包是对Caching的拓展，即可以更换Caching存储介质
             //注意加了这个session也会存入redis里面，这样就做成了session在多个服务实例共享的效果
             #region DistributedRedisCache 
             services.AddDistributedRedisCache(option =>
