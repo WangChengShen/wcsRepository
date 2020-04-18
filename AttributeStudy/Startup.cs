@@ -149,18 +149,16 @@ namespace AttributeStudy
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            //app.UseStaticFiles(new StaticFileOptions()  //指定静态文件的地址，用命令进行托管的时候，要执行下，不然找不到样式
-            //{
-            //    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot")),
-            //    //OnPrepareResponse = c =>
-            //    //{
-            //    //    c.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "no-cache";
-            //    //}
-            //});
-            
-
+            //app.UseHttpsRedirection();
+            //app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()  //指定静态文件的地址，用命令进行托管的时候，要执行下，不然找不到样式
+            {
+                FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot")),
+                //OnPrepareResponse = c =>
+                //{
+                //    c.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "no-cache";
+                //}
+            });
 
             //使用session
             app.UseSession();
@@ -169,21 +167,17 @@ namespace AttributeStudy
             //或者外面再包一层，用扩展方法
             //app.UserTest();
 
-            app.Use(async (context, next) =>
-            {
-                await context.Response.StartAsync();
-                await next();
-                await context.Response.StartAsync();
-            });
+            //app.Use(async (context, next) =>
+            //{
+            //    await context.Response.StartAsync();
+            //    await next();
+            //    await context.Response.StartAsync();
+            //});
 
             //app.Use(,)
-
-            //Func<int, int> func1 = b => { return b + 1; }
-            Func<int> func2 = () => { return 1; };
-
+             
             app.UseRouting();
-
-
+             
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
