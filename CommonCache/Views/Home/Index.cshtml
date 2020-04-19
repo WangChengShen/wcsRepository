@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<link href="~/css/site.css" rel="stylesheet" />
+<div class="text-center">
+    <h2>this is info</h2>
+    <p>访问地址：@ViewBag.RequestUrl</p>
+    <p>后台时间：@ViewBag.ActionTime</p>
+    <p>前端时间：@(DateTime.Now)</p>
+
+    <p>MemoryCache时间：@ViewBag.MemoryCache</p>
+    <p>Redis分布式缓存时间：@ViewBag.DistributedCacheNow</p>
+</div>
