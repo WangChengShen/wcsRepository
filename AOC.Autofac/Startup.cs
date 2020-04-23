@@ -88,19 +88,22 @@ namespace AOC.Autofac
         {
             //单个注册
             builder.RegisterType<SmsDAL>().As<IMessageDAL>();
+            //builder.RegisterType<SmsDAL>().AsImplementedInterfaces();//自动找继承接口
 
             //批量注册依赖到接口
             builder.RegisterAssemblyTypes(System.Reflection.Assembly.Load("Wcs.DAL")).Where(type => type.Name.EndsWith("DAL")).AsImplementedInterfaces();
             builder.RegisterAssemblyTypes(System.Reflection.Assembly.Load("Wcs.BLL")).Where(type => type.Name.EndsWith("BLL")).AsImplementedInterfaces();
 
+            /*AsImplementedInterfaces() 可以使类自动找到它所有继承的接口*/
+
             //批量注册依赖到自己，这样可以在使用类进行注入
             builder.RegisterAssemblyTypes(System.Reflection.Assembly.Load("Wcs.DAL")).AsSelf();
             builder.RegisterAssemblyTypes(System.Reflection.Assembly.Load("Wcs.BLL")).AsSelf();
-             
+
             //当个设置类下的属性注册
             //builder.RegisterType<Controllers.HomeController>().AsSelf().PropertiesAutowired().InstancePerDependency();
 
-            //批量注册属性
+            //批量注册属性注入
             builder.RegisterAssemblyTypes(System.Reflection.Assembly.Load("Wcs.BLL"))
                .AsImplementedInterfaces()
                .Where(t => t.Name.EndsWith("DAL"))
@@ -122,6 +125,28 @@ namespace AOC.Autofac
               .PropertiesAutowired() //设置注册时自动把属性也注入
               .AsSelf()
               .InstancePerDependency();
+
+
+            /*多个类继承同一个接口的时候，后面的注册的依赖关系会覆盖点前面注册的依赖关系，如果不想覆盖可以使用PreserveExistingDefaults方法
+                builder.RegisterType<DogRepository>().As<IAnimalRepository>();
+                builder.RegisterType<CatRepository>().As<IAnimalRepository>();
+                builder.RegisterType<CatRepository>().As<IAnimalRepository>().PreserveExistingDefaults(); //实际注册的是DogRepository
+            */
+            /*多个类实现同一个接口起名,使用时要加上Name
+             builder.RegisterType<DogRepository>().Named<IAnimalRepository>("Dog_IAnimal");
+             builder.RegisterType<CatRepository>().Named<IAnimalRepository>("Cat_IAnimal");
+             var dbRepository = container.ResolveNamed<IAnimalRepository>("Cat_IAnimal");  
+             */
+
+            /*定义生命周期
+              builder.RegisterType<Worker>().InstancePerDependency()：(瞬时)用于控制对象的生命周期，每次加载实例时都是新建一个实例，默认就是这种方式
+              builder.RegisterType<Worker>().SingleInstance()：（单例）用于控制对象的生命周期，每次加载实例时都是返回同一个实例
+             */
+
+            /*
+             * .Net Framwork注册控制器下的属性，注意属性要是public的
+             * builder_mvc.RegisterControllers(typeof(MvcApplication).Assembly).PropertiesAutowired().InstancePerDependency();
+             */
 
             //通过注册模块来注入
             //builder.RegisterModule<CustomAutofacModule>();
