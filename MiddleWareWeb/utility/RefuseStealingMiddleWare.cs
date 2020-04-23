@@ -48,7 +48,7 @@ namespace MiddleWareWeb.utility
             }
             else
             {
-                await _next(httpContext); //验证通过
+                await _next(httpContext); //验证通过则执行下一个中间件
             }
         }
 

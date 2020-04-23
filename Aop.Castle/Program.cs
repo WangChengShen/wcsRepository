@@ -4,16 +4,16 @@ using System;
 namespace Aop.Castle
 {
     /// <summary>
-    /// 基于Castle实现Aop
+    /// 基于Castle实现Aop，利用Castle可以给自定义的IOC实现AOP
     /// 1.nuget添加Castle.Core 包
     /// </summary>
     class Program
     {
         static void Main(string[] args)
         {
-            //1.类型的代理
+            //1.类型的代理，通过代理创建实体
             ProxyGenerator genetator = new ProxyGenerator(); //代理类
-            CustomIntercetor intercepter = new CustomIntercetor();//方法前后的逻辑
+            CustomIntercetor intercepter = new CustomIntercetor();//方法前后的逻辑写到这个类中
             CommonClass commonClass = genetator.CreateClassProxy<CommonClass>(intercepter);//用代理去创建实体
              
             //2、通过接口进行代理
@@ -27,7 +27,7 @@ namespace Aop.Castle
              */
             commonClass.MethodInterceptor();
             Console.WriteLine("");
-            commonClass.MethodNoInterceptor();
+            commonClass.MethodNoInterceptor();//非虚拟的方法不会加入相应的逻辑
             Console.WriteLine("");
             Console.WriteLine("");
         }

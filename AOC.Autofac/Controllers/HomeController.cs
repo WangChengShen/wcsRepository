@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AOC.Autofac.Models;
 using Wcs.DAL;
+using Wcs.BLL;
+using Newtonsoft.Json;
 
 namespace AOC.Autofac.Controllers
 {
@@ -14,15 +16,24 @@ namespace AOC.Autofac.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IMessageDAL _imessageService;
-        public HomeController(ILogger<HomeController> logger, IMessageDAL imessageService)
+        private readonly IStudentBLL studentBLL;
+
+        public IStudentBLL studentBLL2 { get; set; }
+        public HomeController(ILogger<HomeController> logger, IMessageDAL imessageService, IStudentBLL studentBLL)
         {
             _logger = logger;
             _imessageService = imessageService;
+            this.studentBLL = studentBLL;
         }
 
         public IActionResult Index()
         {
             _imessageService.Send();
+            Console.WriteLine(JsonConvert.SerializeObject(studentBLL.GetStudentList()));
+
+            string msg = "属性注入：" + JsonConvert.SerializeObject(studentBLL2.GetStudentList());
+            Console.WriteLine(msg);
+            ViewBag.Msg = msg;
             return View();
         }
 

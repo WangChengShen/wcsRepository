@@ -103,12 +103,12 @@ namespace RabbitMq.Processor
                 using (var connection = factory.CreateConnection())
                 {
                     using (var channel = connection.CreateModel())
-                    { 
+                    {
                         try
                         {
                             var consumer = new EventingBasicConsumer(channel);
                             consumer.Received += (model, ea) =>
-                            { 
+                            {
                                 //接受消息
                                 var body = ea.Body;
                                 var message = Encoding.UTF8.GetString(body);
@@ -119,7 +119,7 @@ namespace RabbitMq.Processor
                                 IBasicProperties props = ea.BasicProperties;
                                 IBasicProperties replyProps = channel.CreateBasicProperties();
                                 replyProps.CorrelationId = props.CorrelationId;
-                                 
+
                                 string resMsg = $"消息（{replyProps.CorrelationId}）:" + new Random().Next(10);
                                 var responseBytes = Encoding.UTF8.GetBytes(resMsg);
                                 channel.BasicPublish("", props.ReplyTo, replyProps, responseBytes);//注意，回复是交换机名称为空，代表默认的交换机
@@ -137,7 +137,7 @@ namespace RabbitMq.Processor
                         {
                             Console.WriteLine(ex.Message);
                         }
-                         
+
                     }
                 }
             }

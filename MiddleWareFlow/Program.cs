@@ -63,7 +63,7 @@ namespace MiddleWareFlow
             //委托触发了会接连触发一系列的每个中间件 
             RequestDelegate requestDelegate = app.Build(); //得到第一中间件返回的委托
 
-            //在这个模拟出发
+            //在这个模拟触发
             HttpContext context = null;
             requestDelegate(context);
 

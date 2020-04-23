@@ -35,7 +35,7 @@ namespace RabbitMq.SendDemo.Controllers
         public IActionResult IndexOne(int? id)
         {
             this.Insert(id ?? 5);
-            return View();
+            return Content("成功发送");
         }
 
         /// <summary>
@@ -93,18 +93,37 @@ namespace RabbitMq.SendDemo.Controllers
                        autoDelete: false,
                        arguments: null);
 
+                    //声明队列2
+                    //channel.QueueDeclare(queue: "OrderOnly2",
+                    //   durable: true,
+                    //   exclusive: false,
+                    //   autoDelete: false,
+                    //   arguments: null);
+                     
                     //声明交换机
                     channel.ExchangeDeclare(exchange: "OrderOnlyChange",
                            type: ExchangeType.Direct,
                            durable: true,
                            autoDelete: false,
                            arguments: null);
-
+                     
                     //队列绑定到交换机
                     channel.QueueBind(queue: "OrderOnly",
                                  exchange: "OrderOnlyChange",
-                                 routingKey: string.Empty, arguments: null);
+                                 routingKey: "OrderOnlyKey", arguments: null);
 
+                    //队列绑定到交换机
+                    //channel.QueueBind(queue: "OrderOnly",
+                    //             exchange: "OrderOnlyChange",
+                    //             routingKey: "OrderOnlyKey2", arguments: null);
+
+                    /*交换机四种模式：Direct(根据路由键匹配),Fanout（广播）、Topic（根据路由键模糊匹配）、headers
+                     * 
+                        交换机设置为Direct模式：
+                        发消息BasicPublish时可以指定消息发送到哪个路由键上，
+                        然后会根据路由键自动找队列，把消息发送到对应的队列里面
+                        例：队列OrderOnly2没有绑定路由键OrderOnlyKey，所以消息不会发到这个队列里面
+                    */
 
                     Console.WriteLine("准备就绪,开始写入~~~");
                     for (int i = 0; i < count; i++)
@@ -112,7 +131,7 @@ namespace RabbitMq.SendDemo.Controllers
                         string message = $"Task{i}";
                         byte[] body = Encoding.UTF8.GetBytes(message);
                         channel.BasicPublish(exchange: "OrderOnlyChange",
-                                        routingKey: string.Empty,
+                                        routingKey: "OrderOnlyKey",
                                         basicProperties: null,
                                         body: body);
                         Console.WriteLine($"消息：{message} 已发送~");
