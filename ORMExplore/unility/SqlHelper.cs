@@ -5,19 +5,26 @@ using System.Linq;
 using System.Text;
 using Wcs.Common;
 
-namespace ORMExplore.Model
+namespace ORMExplore
 {
     public class SqlHelper
-    { 
+    {
         public static T Find<T>(int id)
-        { 
+        {
             using (SqlConnection conn = new SqlConnection(ConfigurationManager.myDBConnString))
             {
                 conn.Open();
                 Type type = typeof(T);
                 SqlCommand comm = conn.CreateCommand();
+
+                var attribute = type.GetCustomAttributes(typeof(WcsORMTableNameAttribute), true);
+
+                string tableName = string.Empty;
+                if (attribute != null && attribute.Length > 0)
+                    tableName = ((WcsORMTableNameAttribute)attribute.First()).TableName;
+
                 string para = type.GetProperties().Select(p => $"[{ p.Name}]").Aggregate((x, y) => x + "," + y);
-                comm.CommandText = $" select {para} from {type.Name} where id={id}";
+                comm.CommandText = $" select {para} from {tableName} where id={id}";
 
                 var reader = comm.ExecuteReader();
 
@@ -31,7 +38,7 @@ namespace ORMExplore.Model
                     }
 
                 }
-                return t; 
+                return t;
             }
         }
 

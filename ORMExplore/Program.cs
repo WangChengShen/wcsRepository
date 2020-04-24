@@ -1,4 +1,4 @@
-﻿using ORMExplore.Model;
+﻿using Newtonsoft.Json;
 using System;
 using Wcs.Models;
 
@@ -10,7 +10,9 @@ namespace ORMExplore
         {
             Console.WriteLine("Hello World!");
 
-            StudentModel stu = SqlHelper.Find<StudentModel>(1);
+            CompanyModel company = SqlHelper.Find<CompanyModel>(1);
+
+            Console.WriteLine(JsonConvert.SerializeObject(company));
         }
     }
 }
