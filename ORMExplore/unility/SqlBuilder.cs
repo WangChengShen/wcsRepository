@@ -17,6 +17,8 @@ namespace ORMExplore.unility
     {
         private static string _findSql = string.Empty;
         private static string _insertSql = string.Empty;
+        private static string _deleteSql = string.Empty;
+        private static string _updateSql = string.Empty;
         static SqlBuilder()
         {
             Type type = typeof(T);
@@ -27,7 +29,12 @@ namespace ORMExplore.unility
             //扩展方法GetPropertiesWithoutKey把主键过滤掉
             string propString = type.GetPropertiesWithoutKey().Select(s => s.GetMappingName()).Aggregate((x, y) => x + "," + y);
             string valueString = type.GetPropertiesWithoutKey().Select(s => $"@{s.GetMappingName()}").Aggregate((x, y) => x + "," + y);
-            _insertSql = $@" insert into {type.GetMappingName()}({propString}) values({valueString});select @@identity;"; 
+            _insertSql = $@" insert into {type.GetMappingName()}({propString}) values({valueString});select @@identity;";
+
+            _deleteSql = $" delete from {tableName} where id=";
+
+            _updateSql = $@" update {tableName} set {type.GetPropertiesWithoutKey().Select(prop => $"{prop.GetMappingName()}=@{prop.GetMappingName()}").Aggregate((x, y) => x + "," + y)}
+                            where id=@{type.GetProperty("Id").Name}";
         }
 
         public static string GetFindSql()
@@ -37,6 +44,14 @@ namespace ORMExplore.unility
         public static string GetInertSql()
         {
             return _insertSql;
+        }
+        public static string GetDeleteSql()
+        {
+            return _deleteSql;
+        }
+        public static string GeUpdateSql()
+        {
+            return _updateSql;
         }
     }
 

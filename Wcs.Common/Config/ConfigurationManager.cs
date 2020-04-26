@@ -18,10 +18,10 @@ namespace Wcs.Common
                   .AddJsonFile("appsettings.json");
 
             IConfigurationRoot configuration = builder.Build();
-            myDBConnString = configuration["Wcs.Db"];
+            WcsDBConnString = configuration["Wcs.Db"];
         }
 
-        public static string myDBConnString
+        public static string WcsDBConnString
         {
             get;
         }
