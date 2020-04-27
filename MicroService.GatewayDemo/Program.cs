@@ -20,7 +20,7 @@ namespace MicroService.GatewayDemo
             Host.CreateDefaultBuilder(args)
            .ConfigureAppConfiguration(conf =>
            {
-            //文件属性改为始终复制
+               //文件属性改为始终复制
                conf.AddJsonFile("configuration.json", optional: false, reloadOnChange: true);
            })
             .ConfigureWebHostDefaults(webBuilder =>

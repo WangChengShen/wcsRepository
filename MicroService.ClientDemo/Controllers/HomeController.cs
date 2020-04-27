@@ -49,10 +49,10 @@ namespace MicroService.ClientDemo.Controllers
             ConsulClient client = new ConsulClient(config =>
            {
                config.Address = new Uri(consulHost);
-               config.Datacenter = "Wcs";
+               config.Datacenter = "dc1";
            });
 
-            string groupName = "Wcs";
+            string groupName = "WcsGroup";
             var agentList = client.Agent.Services().Result.Response
                    .Where(s => s.Value.Service.Equals(groupName, StringComparison.OrdinalIgnoreCase)).ToArray();//找到的全部服务;
 
