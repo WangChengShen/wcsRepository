@@ -22,6 +22,12 @@ namespace ORMExplore
             };
 
             int companyId = SqlHelper.Insert<CompanyModel>(companyModel);
+            companyModel.Id = companyId;
+            companyModel.Address = "北京";
+
+            bool result = SqlHelper.Update<CompanyModel>(companyModel);
+
+            result = SqlHelper.Delete<CompanyModel>(companyId);
 
             Console.WriteLine(JsonConvert.SerializeObject(company));
 

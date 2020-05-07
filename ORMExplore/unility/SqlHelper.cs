@@ -13,7 +13,7 @@ namespace ORMExplore
     {
         public static T Find<T>(int id) where T : Wcs.Models.BaseModel
         {
-            using (SqlConnection conn = new SqlConnection(ConfigurationManager.myDBConnString))
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.WcsDBConnString))
             {
                 conn.Open();
                 Type type = typeof(T);
@@ -46,7 +46,7 @@ namespace ORMExplore
 
         public static int Insert<T>(T t) where T : Wcs.Models.BaseModel
         {
-            using (SqlConnection conn = new SqlConnection(ConfigurationManager.myDBConnString))
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.WcsDBConnString))
             {
                 conn.Open();
                 Type type = typeof(T);
@@ -56,16 +56,44 @@ namespace ORMExplore
                 //string propString = type.GetPropertiesWithoutKey().Select(s => s.GetMappingName()).Aggregate((x, y) => x + "," + y);
                 //string valueString = type.GetPropertiesWithoutKey().Select(s => $"@{s.GetMappingName()}").Aggregate((x, y) => x + "," + y);
                 //string sql = $@" insert into {type.GetMappingName()}({propString}) values({valueString});select @@identity;";
-                 
+
                 SqlParameter[] paraArray = type.GetPropertiesWithoutKey().Select(s => new SqlParameter($"@{s.GetMappingName()}", s.GetValue(t) ?? DBNull.Value)).ToArray();
                 // 利用静态泛型缓存对sql进行缓存
                 string sql = SqlBuilder<T>.GetInertSql();
-                 
+
                 comd.CommandText = sql;
                 comd.Parameters.AddRange(paraArray);
                 return Convert.ToInt32(comd.ExecuteScalar());
             }
         }
+
+        public static bool Delete<T>(int id) where T : Wcs.Models.BaseModel
+        {
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.WcsDBConnString))
+            {
+                conn.Open();
+                Type type = typeof(T);
+                SqlCommand comm = conn.CreateCommand();
+                comm.CommandText = $"{SqlBuilder<T>.GetFindSql()} {id}";
+                return comm.ExecuteNonQuery() > 0;
+            }
+        }
+
+        public static bool Update<T>(T t) where T : Wcs.Models.BaseModel
+        {
+            using (SqlConnection conn = new SqlConnection(ConfigurationManager.WcsDBConnString))
+            {
+                conn.Open();
+                Type type = typeof(T);
+                SqlCommand comm = conn.CreateCommand();
+                int id = (int)type.GetProperty("Id").GetValue(t);
+
+                SqlParameter[] paraArray = type.GetProperties().Select(s => new SqlParameter($"@{s.GetMappingName()}", s.GetValue(t) ?? DBNull.Value)).ToArray();
+                comm.CommandText = $"{SqlBuilder<T>.GeUpdateSql()} {id}";
+                return comm.ExecuteNonQuery() > 0;
+            }
+        }
+
 
 
 
