@@ -102,6 +102,7 @@ namespace ORMExplore
 
             SqlHelper.Update<CompanyModel>(11, JsonConvert.SerializeObject(new
             {
+                CName= "速派666",
                 Address = "上海111"
             }));
 

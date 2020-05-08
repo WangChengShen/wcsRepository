@@ -9,14 +9,14 @@ using Wcs.Common.Config;
 namespace ORMExplore.unility
 {
     public static class FilterExtent
-    { 
+    {
         public static IEnumerable<PropertyInfo> GetPropertiesWithoutKey(this Type type)
         {
             return type.GetProperties().Where(t => !t.IsDefined(typeof(WcsORMKeyAttribute))).ToList();
         }
-        public static IEnumerable<PropertyInfo> GetPropertiesInJson(this Type type,string json)
+        public static IEnumerable<PropertyInfo> GetPropertiesInJson(this Type type, string json)
         {
-            return type.GetProperties().Where(t => json.Contains($"'{t.GetMappingName()}':")||json.Contains($"\"{t.GetMappingName()}\":")).ToList();
+            return type.GetProperties().Where(t => json.Contains($"'{t.Name}':") || json.Contains($"\"{t.Name}\":")).ToList();
         }
     }
 }
