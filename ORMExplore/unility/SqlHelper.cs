@@ -1,4 +1,5 @@
-﻿using ORMExplore.unility;
+﻿using Newtonsoft.Json;
+using ORMExplore.unility;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -13,7 +14,8 @@ namespace ORMExplore
     {
         public static T Find<T>(int id) where T : Wcs.Models.BaseModel
         {
-            using (SqlConnection conn = new SqlConnection(ConfigurationManager.WcsDBConnString))
+            //using (SqlConnection conn = new SqlConnection(ConfigurationManager.WriteConnString)) 
+            using (SqlConnection conn = new SqlConnection(SqlConnectionPool.GetConnection(SqlConnectionPool.SqlConnecctionType.Read)))
             {
                 conn.Open();
                 Type type = typeof(T);
@@ -46,7 +48,8 @@ namespace ORMExplore
 
         public static int Insert<T>(T t) where T : Wcs.Models.BaseModel
         {
-            using (SqlConnection conn = new SqlConnection(ConfigurationManager.WcsDBConnString))
+            //using (SqlConnection conn = new SqlConnection(ConfigurationManager.WriteConnString))
+            using (SqlConnection conn = new SqlConnection(SqlConnectionPool.GetConnection(SqlConnectionPool.SqlConnecctionType.Write)))
             {
                 conn.Open();
                 Type type = typeof(T);
@@ -69,7 +72,8 @@ namespace ORMExplore
 
         public static bool Delete<T>(int id) where T : Wcs.Models.BaseModel
         {
-            using (SqlConnection conn = new SqlConnection(ConfigurationManager.WcsDBConnString))
+            // using (SqlConnection conn = new SqlConnection(ConfigurationManager.WriteConnString))
+            using (SqlConnection conn = new SqlConnection(SqlConnectionPool.GetConnection(SqlConnectionPool.SqlConnecctionType.Write)))
             {
                 conn.Open();
                 Type type = typeof(T);
@@ -81,7 +85,8 @@ namespace ORMExplore
 
         public static bool Update<T>(T t) where T : Wcs.Models.BaseModel
         {
-            using (SqlConnection conn = new SqlConnection(ConfigurationManager.WcsDBConnString))
+            //using (SqlConnection conn = new SqlConnection(ConfigurationManager.WriteConnString))
+            using (SqlConnection conn = new SqlConnection(SqlConnectionPool.GetConnection(SqlConnectionPool.SqlConnecctionType.Write)))
             {
                 conn.Open();
                 Type type = typeof(T);
@@ -90,9 +95,42 @@ namespace ORMExplore
 
                 SqlParameter[] paraArray = type.GetProperties().Select(s => new SqlParameter($"@{s.GetMappingName()}", s.GetValue(t) ?? DBNull.Value)).ToArray();
                 comm.CommandText = $"{SqlBuilder<T>.GeUpdateSql()} {id}";
+                comm.Parameters.AddRange(paraArray);
                 return comm.ExecuteNonQuery() > 0;
             }
         }
+
+        /// <summary>
+        /// 按需更新
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static bool Update<T>(int Id, string json) where T : Wcs.Models.BaseModel
+        {
+            //using (SqlConnection conn = new SqlConnection(ConfigurationManager.WriteConnString))
+            using (SqlConnection conn = new SqlConnection(SqlConnectionPool.GetConnection(SqlConnectionPool.SqlConnecctionType.Write)))
+            { 
+                Type type = typeof(T);
+                T t = JsonConvert.DeserializeObject<T>(json);
+
+                string tableName = type.GetMappingName();
+                string sqlUpdata = $@" update {tableName} set {type.GetPropertiesInJson(json).Select(prop => $"{prop.GetMappingName()}=@{prop.GetMappingName()}").Aggregate((x, y) => x + "," + y)}
+                            where Id=@Id";
+
+                SqlParameter[] paraArray = type.GetPropertiesInJson(json)
+                    .Select(s => new SqlParameter($"@{s.GetMappingName()}", s.GetValue(t) ?? DBNull.Value))
+                    .Append(new SqlParameter("@Id", Id))
+                    .ToArray();
+
+                conn.Open();
+                SqlCommand comm = conn.CreateCommand();
+                comm.CommandText = sqlUpdata;
+                comm.Parameters.AddRange(paraArray);
+                return comm.ExecuteNonQuery() > 0;
+            }
+        }
+
 
 
 

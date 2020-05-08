@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Wcs.Common;
+using Wcs.Common.Config;
 
 namespace ORMExplore.unility
 {
@@ -12,6 +13,10 @@ namespace ORMExplore.unility
         public static IEnumerable<PropertyInfo> GetPropertiesWithoutKey(this Type type)
         {
             return type.GetProperties().Where(t => !t.IsDefined(typeof(WcsORMKeyAttribute))).ToList();
+        }
+        public static IEnumerable<PropertyInfo> GetPropertiesInJson(this Type type,string json)
+        {
+            return type.GetProperties().Where(t => json.Contains($"'{t.GetMappingName()}':")||json.Contains($"\"{t.GetMappingName()}\":")).ToList();
         }
     }
 }

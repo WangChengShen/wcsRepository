@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Wcs.Common
@@ -17,14 +18,21 @@ namespace Wcs.Common
                   .SetBasePath(Directory.GetCurrentDirectory())
                   .AddJsonFile("appsettings.json");
 
-            IConfigurationRoot configuration = builder.Build();
-            WcsDBConnString = configuration["Wcs.Db"];
+            IConfigurationRoot configuration = builder.Build(); ;
+            WriteConnString = configuration["ConnectionStrings:Write"];
+             
+            ReadConnString = configuration.GetSection("ConnectionStrings").GetSection("Read").GetChildren()
+                .Select(s => s.Value).ToArray();
         }
 
-        public static string WcsDBConnString
+        public static string WriteConnString
+        {
+            get;
+        }
+        public static string[] ReadConnString
         {
             get;
         }
 
-    }
+}
 }
