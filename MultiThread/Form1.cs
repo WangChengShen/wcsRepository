@@ -49,8 +49,9 @@ namespace MultiThread
             for (int i = 0; i < 10; i++)
             {
                 int index2 = GetRandNum(1, 16);
+              
                 lbRed2.Text = redNumArray[index2];
-
+              
             }
 
             return;
