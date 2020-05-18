@@ -12,6 +12,7 @@ namespace ORMExplore
 {
     public class SqlHelper
     {
+        #region SqlHelper 增删改查 
         public static T Find<T>(int id) where T : Wcs.Models.BaseModel
         {
             //using (SqlConnection conn = new SqlConnection(ConfigurationManager.WriteConnString)) 
@@ -70,6 +71,7 @@ namespace ORMExplore
             }
         }
 
+     
         public static bool Delete<T>(int id) where T : Wcs.Models.BaseModel
         {
             // using (SqlConnection conn = new SqlConnection(ConfigurationManager.WriteConnString))
@@ -131,8 +133,39 @@ namespace ORMExplore
             }
         }
 
+        #endregion
 
 
+        /// <summary>
+        /// 插入到另一个库，为了测试用
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="t"></param>
+        /// <param name="sqlConn"></param>
+        /// <returns></returns>
+        public static int InsertOtherDatabase<T>(T t, string sqlConn) where T : Wcs.Models.BaseModel
+        {
+            //using (SqlConnection conn = new SqlConnection(ConfigurationManager.WriteConnString))
+            using (SqlConnection conn = new SqlConnection(sqlConn))
+            {
+                conn.Open();
+                Type type = typeof(T);
+                SqlCommand comd = conn.CreateCommand();
+
+                //扩展方法GetPropertiesWithoutKey把主键过滤掉
+                //string propString = type.GetPropertiesWithoutKey().Select(s => s.GetMappingName()).Aggregate((x, y) => x + "," + y);
+                //string valueString = type.GetPropertiesWithoutKey().Select(s => $"@{s.GetMappingName()}").Aggregate((x, y) => x + "," + y);
+                //string sql = $@" insert into {type.GetMappingName()}({propString}) values({valueString});select @@identity;";
+
+                SqlParameter[] paraArray = type.GetPropertiesWithoutKey().Select(s => new SqlParameter($"@{s.GetMappingName()}", s.GetValue(t) ?? DBNull.Value)).ToArray();
+                // 利用静态泛型缓存对sql进行缓存
+                string sql = SqlBuilder<T>.GetInertSql();
+
+                comd.CommandText = sql;
+                comd.Parameters.AddRange(paraArray);
+                return Convert.ToInt32(comd.ExecuteScalar());
+            }
+        }
 
 
     }
