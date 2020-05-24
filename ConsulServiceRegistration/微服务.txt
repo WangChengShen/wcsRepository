@@ -16,5 +16,8 @@ dotnet 注册把程序托管到端口
 dotnet MyServiceA.dll  --urls="http://*:6001" --ip="127.0.0.1" --port=6001 --weight=1
 dotnet MyServiceA.dll  --urls="http://*:6002" --ip="127.0.0.1" --port=6002 --weight=1
 
+dotnet MyServiceA.dll  --urls="http://*:6001" --ip="192.168.43.163" --port=6001 --weight=1
+dotnet MyServiceA.dll  --urls="http://*:6002" --ip="192.168.43.163" --port=6002 --weight=1
+
 dotnet MyServiceB.dll  --urls="http://*:7001" --ip="127.0.0.1" --port=7001 --weight=1
 dotnet MyServiceB.dll  --urls="http://*:7002" --ip="127.0.0.1" --port=7002 --weight=1

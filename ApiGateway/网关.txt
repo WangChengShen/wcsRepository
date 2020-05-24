@@ -1,0 +1,8 @@
+﻿
+
+dotnet ApiGateway.dll  --urls="http://*:9001" --ip="127.0.0.1" --port=9001 --weight=1
+
+从具体服务
+http://127.0.0.1:6001/api/Order/Get
+http://127.0.0.1:7001/api/Order/Get
+http://127.0.0.1:9001/MyServiceA/Order/Get
