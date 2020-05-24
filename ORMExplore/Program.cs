@@ -151,6 +151,7 @@ namespace ORMExplore
             //在这里不会成功，因为在.Net Core2.1之后不支持了，可在framework框架里面测试，不要忘了打开DTC服务
             BLL.InsertCompnayNoSameData();
             #endregion
+
             Console.ReadLine();
         }
     }

@@ -1,0 +1,20 @@
+﻿服务注册与发现
+consul(etcd/Zookeeper):
+官网：https://www.consul.io
+
+启动consul命令:
+consul.exe agent -dev
+
+在命令行里停止的话也是用ctrl+c
+
+consul的默认端口是8500，所以访问地址：
+http://127.0.0.1:8500
+
+************************服务端和客户端******************************************
+dotnet 注册把程序托管到端口
+服务端
+dotnet MyServiceA.dll  --urls="http://*:6001" --ip="127.0.0.1" --port=6001 --weight=1
+dotnet MyServiceA.dll  --urls="http://*:6002" --ip="127.0.0.1" --port=6002 --weight=1
+
+dotnet MyServiceB.dll  --urls="http://*:7001" --ip="127.0.0.1" --port=7001 --weight=1
+dotnet MyServiceB.dll  --urls="http://*:7002" --ip="127.0.0.1" --port=7002 --weight=1
