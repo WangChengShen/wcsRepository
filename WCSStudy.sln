@@ -104,11 +104,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Polly", "Polly", "{F14E8DEC-CF3A-4AC1-A97A-0BCBBDEBFEEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PollyDemo", "PollyDemo\PollyDemo.csproj", "{DBB14232-9996-44EF-A48F-F8644135BE33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PollyDemo", "PollyDemo\PollyDemo.csproj", "{DBB14232-9996-44EF-A48F-F8644135BE33}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GateWay", "GateWay", "{370DF4C5-98CE-4918-A639-722FA9E336FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{EC03A52B-D631-4E76-BC14-97F7B143FF25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{EC03A52B-D631-4E76-BC14-97F7B143FF25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seckill", "Seckill\Seckill.csproj", "{9F6A1D66-C20E-450B-BF88-65A7A44D4C8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -268,6 +270,10 @@ Global
 		{EC03A52B-D631-4E76-BC14-97F7B143FF25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC03A52B-D631-4E76-BC14-97F7B143FF25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC03A52B-D631-4E76-BC14-97F7B143FF25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F6A1D66-C20E-450B-BF88-65A7A44D4C8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F6A1D66-C20E-450B-BF88-65A7A44D4C8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F6A1D66-C20E-450B-BF88-65A7A44D4C8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F6A1D66-C20E-450B-BF88-65A7A44D4C8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

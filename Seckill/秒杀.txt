@@ -1,0 +1,6 @@
+﻿
+
+
+dotnet Seckill.dll --id=1 --minute=07
+dotnet Seckill.dll --id=2 --minute=07
+dotnet Seckill.dll --id=3 --minute=07
