@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Seckill.Redis
+namespace RedisDemo
 {
 
     public class ZSetBase
@@ -26,7 +26,10 @@ namespace Seckill.Redis
     public class RedisHelper
     {
         public static ConnectionMultiplexer connectionMultiplexer { get; set; }
-        private static IDatabase db { get; set; }
+        //private static IDatabase db { get; set; }
+
+        public static IDatabase db { get; set; } //应该私有化，但是为了在外部操作，在此公开化
+
         private static object obj = new object();
 
         /// <summary>
@@ -329,8 +332,7 @@ namespace Seckill.Redis
         }
 
         #endregion
-
-
+         
         #region set的操作
 
         /// <summary>
@@ -420,6 +422,8 @@ namespace Seckill.Redis
             return db.SortedSetIncrement(key, str, addScore);
         }
         #endregion
+
+
 
     }
 }
