@@ -26,8 +26,12 @@ namespace RedisDemo
             //RedisTransaction.TransationDemo();
             //RedisTransaction.TransationDemo2();
 
+
+            string id = config["id"];
+            int minute = Convert.ToInt32(config["minute"]);
+
             //3.分布式锁
-            RedisDistributedLock.Skills(15);
+            RedisDistributedLock.Skills(minute,15);
 
         }
 
