@@ -294,7 +294,7 @@
       "UseServiceDiscovery": true,
       "ServiceName": "WcsGroup", //consul服务名称
       "LoadBalancerOptions": {
-        "Type": "RoundRobin" //轮询      LeastConnection-最少连接数的服务器   NoLoadBalance不负载均衡
+        "Type": "RoundRobin" //3种：轮询      LeastConnection-最少连接数的服务器   NoLoadBalance不负载均衡
       },
       //"FileCacheOptions": {
       //  "TtlSeconds": 10

@@ -44,7 +44,7 @@ namespace ORMExplore
             //    Address = "上海",
             //    CreateTime = DateTime.Now,
             //    Handset = "15110011001"
-            //}; 
+            //};
             //int companyId = SqlHelper.Insert<CompanyModel>(companyModel);
             //for (int i = 0; i < 100; i++)
             //{
@@ -91,21 +91,65 @@ namespace ORMExplore
 
 
             #region 按需更新
-            CompanyModel companyModel = new CompanyModel
-            {
-                LinkMan = "王二",
-                CName = "速派12",
-                Address = "上海",
-                CreateTime = DateTime.Now,
-                Handset = "151100110012"
-            };
+            //CompanyModel companyModel = new CompanyModel
+            //{
+            //    LinkMan = "王二",
+            //    CName = "速派12",
+            //    Address = "上海",
+            //    CreateTime = DateTime.Now,
+            //    Handset = "151100110012"
+            //};
 
-            SqlHelper.Update<CompanyModel>(11, JsonConvert.SerializeObject(new
-            {
-                CName= "速派666",
-                Address = "上海111"
-            }));
+            //SqlHelper.Update<CompanyModel>(11, JsonConvert.SerializeObject(new
+            //{
+            //    CName= "速派666",
+            //    Address = "上海111"
+            //}));
 
+            #endregion
+
+            #region 模拟EF的DBContext做延迟式的SqlHelper
+            //CompanyModel companyModel = new CompanyModel
+            //{
+            //    LinkMan = "王二",
+            //    CName = "速派XXXX",
+            //    Address = "上海",
+            //    CreateTime = DateTime.Now,
+            //    Handset = "151100110012"
+            //};
+            //CompanyModel companyModel2 = new CompanyModel
+            //{
+            //    LinkMan = "王二",
+            //    CName = "速派XXXX速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12速派12",
+            //    Address = "上海",
+            //    CreateTime = DateTime.Now,
+            //    Handset = "151100110012"
+            //};
+
+            //// companyModel2.CName = "速派XXXX2";
+            //using (SqlHelperDelay sqlHelperDelay = new SqlHelperDelay())
+            //{
+            //    sqlHelperDelay.Insert<CompanyModel>(companyModel);
+
+            //    sqlHelperDelay.Insert<CompanyModel>(companyModel2);
+
+            //    sqlHelperDelay.SaveChange();
+            //}
+            #endregion
+
+            #region 用TranscationScope 来给单数据库不同SqlConnectionn连接对象提交做事务，所以TranscationScope可以在BLL里面写
+            // BLL.InsertCompnay();
+            #endregion
+
+
+            #region 用TranscationScope 也可以给不通数据库的SqlConnectionn连接对象提交做事务， 但是.Net Core2.1之后不支持了，在方freamwork里面都是可以的
+            /*
+             用TranscationScope 也可以给不通数据库的SqlConnectionn连接对象提交做事务， 但是.Net Core2.1之后不支持了，在方freamwork里面都是可以的;
+             做法是要打开一个windows 服务，名称叫Distributed Transaction Coordinator，打开之后就可以了，多次操作里面库字符串可夸库；
+             属于分布式事务
+             */
+            //在这里不会成功，因为在.Net Core2.1之后不支持了，可在framework框架里面测试，不要忘了打开DTC服务
+            BLL.InsertCompnayNoSameData();
             #endregion
 
             Console.ReadLine();

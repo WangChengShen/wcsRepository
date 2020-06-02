@@ -1,0 +1,48 @@
+{
+  "ReRoutes": [
+    {
+      // 下游是服务提供者
+      "DownstreamPathTemplate": "/api/{path}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 6001
+        },
+        {
+          "Host": "localhost",
+          "Port": 6002
+        }
+      ],
+      // 上游是调用方
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "UpstreamPathTemplate": "/MyServiceA/{path}",
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+        // LeastConnection
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/{path}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7001
+        },
+        {
+          "Host": "localhost",
+          "Port": 7002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "UpstreamPathTemplate": "/MyServiceB/{path}",
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+    "ReRouteIsCaseSensitive": false  //忽略大小写
+  }
+}

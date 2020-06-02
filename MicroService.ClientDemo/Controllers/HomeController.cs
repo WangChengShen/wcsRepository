@@ -53,6 +53,9 @@ namespace MicroService.ClientDemo.Controllers
            });
 
             string groupName = "WcsGroup";
+            //会把所有的服务都返回，包括挂掉，还未被移除的服务，应该用
+           // client.Health.Service("groupName").Result.Response.ToArray();
+
             var agentList = client.Agent.Services().Result.Response
                    .Where(s => s.Value.Service.Equals(groupName, StringComparison.OrdinalIgnoreCase)).ToArray();//找到的全部服务;
 
