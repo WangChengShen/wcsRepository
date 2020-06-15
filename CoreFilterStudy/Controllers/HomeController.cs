@@ -45,10 +45,11 @@ namespace CoreFilterStudy.Controllers
         [CustomFilterFactory(typeof(CustomExceptionFilterAttribute))] //通过继承接口实现，其实ServiceFilter是这种方式的疯封装，
         public IActionResult Index()
         {
+            _logger.LogError($"日志");
             int a = 1;
             int b = 0;
             int c = a / b;
-
+       
             return View();
         }
 
