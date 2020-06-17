@@ -1,4 +1,4 @@
-using System;
+    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -180,6 +180,7 @@ namespace AttributeStudy
              
             app.UseAuthorization();
 
+            //终结点中间件
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
