@@ -40,7 +40,7 @@ namespace CoreFilterStudy.Controllers
 
         //[CustomExceptionFilter] 构造时不需要参数时
         //[ServiceFilter(typeof(CustomExceptionFilterAttribute))]  //需要参数时在方法或控制器使用要用ServiceFilter辅助
-        //  [TypeFilter(typeof(CustomExceptionFilterAttribute))] // 不用在startUp的ConfiguraServie里面进行注册，使用比较方便
+        //[TypeFilter(typeof(CustomExceptionFilterAttribute))] // 不用在startUp的ConfiguraServie里面进行注册，使用比较方便
 
         [CustomFilterFactory(typeof(CustomExceptionFilterAttribute))] //通过继承接口实现，其实ServiceFilter是这种方式的疯封装，
         public IActionResult Index()

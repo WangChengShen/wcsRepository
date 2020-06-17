@@ -44,7 +44,7 @@ namespace ConsulServiceRegistration
             {
                 //服务注册的地址，集群中任意一个地址
                 configuration.Address = new Uri(serviceOptions.ConsulAddress);
-                // configuration.Datacenter = "dc1";//数据中心的名称
+                //configuration.Datacenter = "dc1";//数据中心的名称
             });
 
 

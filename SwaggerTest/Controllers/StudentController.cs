@@ -10,7 +10,7 @@ using Wcs.Models;
 
 namespace SwaggerTest.Controllers
 {
-    [EnableCors("any")]//设置允许跨域
+    [EnableCors("Any")]//设置允许跨域
     [ApiController]
     [Route("api/[controller]")]
     public class StudentController : ControllerBase

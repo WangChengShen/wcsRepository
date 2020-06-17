@@ -38,6 +38,7 @@ namespace CoreFilterStudy
             //使用TypeFilter把CustomExceptionFilterAttribute打到方法或控制器上时不用注册
             //通过继承IFilterTactory实现，也要在这里进行注册
             services.AddTransient<CustomExceptionFilterAttribute>();
+
             services.AddTransient<ErrorViewModel>();
 
            

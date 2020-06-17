@@ -142,9 +142,9 @@ namespace ORMExplore
             #endregion
 
 
-            #region 用TranscationScope 也可以给不通数据库的SqlConnectionn连接对象提交做事务， 但是.Net Core2.1之后不支持了，在方freamwork里面都是可以的
+            #region 用TranscationScope 也可以给不同数据库的SqlConnectionn连接对象提交做事务， 但是.Net Core2.1之后不支持了，在方freamwork里面都是可以的
             /*
-             用TranscationScope 也可以给不通数据库的SqlConnectionn连接对象提交做事务， 但是.Net Core2.1之后不支持了，在方freamwork里面都是可以的;
+             用TranscationScope 也可以给不同数据库的SqlConnectionn连接对象提交做事务， 但是.Net Core2.1之后不支持了，在方freamwork里面都是可以的;
              做法是要打开一个windows 服务，名称叫Distributed Transaction Coordinator，打开之后就可以了，多次操作里面库字符串可夸库；
              属于分布式事务
              */

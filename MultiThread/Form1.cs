@@ -68,8 +68,8 @@ namespace MultiThread
                                 int index = GetRandNum(1, 32);
                                 string num = redNumArray[index];
                                 //label.Text = num;  
-                                /*重要知识1： label控件是在主线程里面初始化的，所以只能主线程来操作，否则会报错;
-                                 * 要用委托，把操作动作委托给主线程
+                                /*重要知识1： label控件是在主线程里面初始化的，所以只能主线程来操作，子线程不能操作它，否则会报错;
+                                 * 要在主线程里面用委托，把操作动作委托给主线程
                                  */
 
                                 lock (obj_lock)
