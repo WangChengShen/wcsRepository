@@ -73,7 +73,7 @@ namespace RedisDemo
                 //}
             }
 
-            //V3：Redis实现分布式锁（推荐）
+            //V3：Redis实现分布式锁（推荐）在多个进程里面也能防止超卖
             {
                 //RedisLock redisLock = new RedisLock();
                 //redisLock.Lock();
@@ -91,7 +91,7 @@ namespace RedisDemo
                 //redisLock.UnLock();
             }
 
-            //V4（推荐）
+            //V4（推荐）用redis执行命令时时单线程的特性 StringDecrement 自动减1，进行实现秒杀
             {
                 //int stock = GetStock();
                 //RedisHelper.SetStringValue("stock", $"{stock}");

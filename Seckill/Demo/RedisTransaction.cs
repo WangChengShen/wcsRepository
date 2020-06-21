@@ -10,7 +10,7 @@ namespace RedisDemo
     {
         /// <summary>
         /// ServiceStack.Redis
-        /// Redis 有事务，但是没有回滚的操作；如果在事务过程中，有地方改了监控的key，则整个事务会提交失败；
+        /// Redis 有事务，但是没有回滚的操作；如果在事务过程中，有地方改了监控key的值，则整个事务会提交失败；
         /// </summary>
         public static void TransationDemo()
         {

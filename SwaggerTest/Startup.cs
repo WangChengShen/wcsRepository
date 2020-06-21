@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -38,11 +39,24 @@ namespace SwaggerTest
                     Title = "SwaggerTest",
                     Version = "version1" //这个是自己定的
                 });
+
+                //项目属性里面=》生成=》把“XML 文件路径” 勾上，设置为“bin\Debug\netcoreapp3.1\SwaggerTest.xml”
+                //string path = Path.Combine(System.IO.Directory.GetCurrentDirectory(), $"bin\\Debug\\netcoreapp3.1\\DotnetCore.xml");
+                string path = Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location), "SwaggerTest.xml");//
+
+                option.IncludeXmlComments(path);
             });
 
-            //设置允许跨域，所有的请求，需要add一下，use一下，然后可以在控制器或方法上打EnableCors("any")标签
-            services.AddCors(m => m.AddPolicy("any",
-                a => a.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+            //设置允许跨域，所有的请求，需要add一下，use一下，然后可以在控制器或方法上打EnableCors("any")标签，如果要禁用跨域使用DisableCors特性
+            services.AddCors(m =>
+            {
+                //添加策略
+                m.AddPolicy("Any", a => a.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                m.AddPolicy("SomeWebSite", a =>
+                {
+                    a.WithOrigins("http://www.gongkongbpo.com", "http://www.gongkongbpo1.com", "http://www.gongkongbpo2.com");
+                });
+            });
 
             //简单设置缓存，ResponseCache如果直接用是浏览器缓存；
             //如果add,use 一下就会变成服务端的缓存 
