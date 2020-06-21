@@ -1,0 +1,21 @@
+syntax = "proto3";//版本信息
+
+option csharp_namespace = "GrpcServer";//命名空间
+
+package greet;
+
+// The greeting service definition.定义类
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply);
+}
+
+// The request message containing the user's name.参数类
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings.返回结果类
+message HelloReply {
+  string message = 1;
+}
