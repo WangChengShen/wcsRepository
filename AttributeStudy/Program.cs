@@ -19,6 +19,18 @@ namespace AttributeStudy
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+            //.ConfigureLogging(logBuilder =>
+            //{
+            //    /*log4的使用
+            //     引入：Microsoft.Extensions.Logging.Log4Net.A
+            //     添加log4net.Config配置文件
+            //     添加服务有两种方法，在pragram或在startup里面
+            //     * 第一种方式在pragram配置添加ConfigureLogging然后如下，
+            //     第二种是在Configure里面注入ILoggerFactory，然后调用AddLog4Net方法
+            //     */
+
+            //    logBuilder.AddLog4Net();
+            //})
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     //ConfigureLogging 是对日志组件进行配置的，ClearProviders是清除默认的配置

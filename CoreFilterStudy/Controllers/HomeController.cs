@@ -31,7 +31,7 @@ namespace CoreFilterStudy.Controllers
     {
         private readonly ErrorViewModel model;
         private readonly ILogger<HomeController> _logger;
-
+         
         public HomeController(ILogger<HomeController> logger, ErrorViewModel model)
         {
             _logger = logger;
