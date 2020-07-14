@@ -43,7 +43,8 @@ namespace PollyDemo
                 .Fallback(() =>
                 {
                     Console.WriteLine("这是一个替代数据");
-                }, exception =>
+                }, 
+                exception =>
                 {
                     Console.WriteLine("Fallback被触发");
                 });

@@ -168,7 +168,7 @@ namespace AttributeStudy
             //自定义中间件
             // app.UseMiddleware<TestMiddleWare>();
             //或者外面再包一层，用扩展方法
-            //app.UserTest();
+           // app.UserTest();
 
             //app.Use(async (context, next) =>
             //{

@@ -123,7 +123,7 @@ namespace RabbitMq.Processor
                                 string resMsg = $"消息（{replyProps.CorrelationId}）:" + new Random().Next(10);
                                 var responseBytes = Encoding.UTF8.GetBytes(resMsg);
                                 channel.BasicPublish("", props.ReplyTo, replyProps, responseBytes);//注意，回复是交换机名称为空，代表默认的交换机
-                                Console.WriteLine($"回复消息：{resMsg}");
+                                Console.WriteLine($"回复消息：{resMsg},ReplyTo={props.ReplyTo}");
                             };
 
                             //注意（之前理解有误）：取消息的时候不绑定交换机，根据队列取就可以了
