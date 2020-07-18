@@ -1,10 +1,11 @@
-    using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AttributeStudy.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -102,7 +103,7 @@ namespace AttributeStudy
             #endregion
 
             //web项目会有这个service
-            services.AddControllersWithViews(); 
+            services.AddControllersWithViews();
         }
 
         /// <summary>
@@ -165,26 +166,48 @@ namespace AttributeStudy
 
             //使用session
             app.UseSession();
-            //自定义中间件
-            // app.UseMiddleware<TestMiddleWare>();
-            //或者外面再包一层，用扩展方法
-            //app.UserTest();
-
-            //app.Use(async (context, next) =>
-            //{
-            //    await context.Response.StartAsync();
-            //    await next();
-            //    await context.Response.StartAsync();
-            //});
-
-            //app.Use(,)
-             
-            app.UseRouting();
-             
-            app.UseAuthorization();
-
             loggerFactory.AddLog4Net();
 
+
+            /*
+             中间件Core有很多种形式，Run（终结式）,Use（比较重要，承上启下）,UserWhen,Map,MapWhen，UseMiddleware（自定义）
+             */
+            /*自定义中间件
+            app.UseMiddleware<TestMiddleWare>();
+            //或者外面再包一层，用扩展方法
+            app.UserTest();
+            */
+            //Use中间件，承上启下
+            app.Use(async (context, next) =>
+            {
+                loggerFactory.CreateLogger<Startup>().LogWarning("this is middleware 1 start  ");
+                await next();
+                loggerFactory.CreateLogger<Startup>().LogWarning("this is middleware 1 end  ");
+            });
+            app.Use(async (context, next) =>
+            {
+                loggerFactory.CreateLogger<Startup>().LogWarning("this is middleware 2 start  ");
+                await next();
+                loggerFactory.CreateLogger<Startup>().LogWarning("this is middleware 2 end  ");
+            });
+
+            /*UseWhen中间件，有两个参数，满足第一个中间件的条件时会执行第二个中间件的处理*/
+            app.UseWhen(context =>
+            {
+                return context.Request.Query.ContainsKey("name");
+                //return context.Request.Query.Keys.Contains("name");
+            }, builder =>
+            {
+                builder.Run(async context =>
+                {
+                    await context.Response.WriteAsync("this is userWhen middleware ");
+                });
+            });
+
+
+            app.UseRouting();
+
+            app.UseAuthorization();
 
             //终结点中间件
             app.UseEndpoints(endpoints =>

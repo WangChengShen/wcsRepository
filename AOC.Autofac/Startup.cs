@@ -148,7 +148,7 @@ namespace AOC.Autofac
              * builder_mvc.RegisterControllers(typeof(MvcApplication).Assembly).PropertiesAutowired().InstancePerDependency();
              */
 
-            //通过注册模块来注入
+            //通过注册模块来注入(重要：可以把上面注入的代码都移到一个类里面，然后把该类以模块的方式注入)
             //builder.RegisterModule<CustomAutofacModule>();
         }
     }
