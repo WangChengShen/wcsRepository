@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PollyDemo
 {
     /// <summary>
-    /// Polly是一种.Net 弹性和瞬间故障处理库，允许我们以非常顺畅和线程安全的方式来之心如重试，断路，超时，故障恢复等策略；
+    /// Polly是一种.Net 弹性和瞬间故障处理库，允许我们以非常顺畅和线程安全的方式来执行，如重试，断路，超时，故障恢复等策略；
     /// Nuget引入Polly库
     /// </summary>
     class Program

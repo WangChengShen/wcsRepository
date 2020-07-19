@@ -88,7 +88,7 @@ namespace MultiThread
                     }
                     else if (label.Name.Contains("Blue"))
                     {
-                        taskList.Add(Task.Run(() =>
+                       taskList.Add(Task.Run(() =>
                        {
                            while (isGoOn)
                            {
@@ -142,11 +142,11 @@ namespace MultiThread
             //MessageBox.Show($"号码：{lbRed1.Text}-{lbRed2.Text}-{lbRed3.Text}-{lbRed4.Text}-{lbRed5.Text}-{lbRed6.Text}   {lbBlue.Text}");
 
             /*
-            重要知识点：Task.WaitAll 在主线程（假设称为线程1）里面等待所有子线程结束，但是子线程（假设线程2）里面有委托主线程显示num.
-            就会造成主线程等待子线程结束，而子线程等待主线程显示num,造成互相等待死锁；
-            分析：线程1等待线程2结束；线程2登录线程1显示num；造成死锁，解决方案是把Task.WaitAll(taskList.ToArray())放到另一个
-            子线程3里面，这样就会线程3等待线程2结束，线程2等待线程1显示num，就不会造成死锁；
-            最终代码如下
+                重要知识点：Task.WaitAll 在主线程（假设称为线程1）里面等待所有子线程结束，但是子线程（假设线程2）里面有委托主线程显示num.
+                就会造成主线程等待子线程结束，而子线程等待主线程显示num,造成互相等待死锁；
+                分析：线程1等待线程2结束；线程2登录线程1显示num；造成死锁，解决方案是把Task.WaitAll(taskList.ToArray())放到另一个
+                子线程3里面，这样就会线程3等待线程2结束，线程2等待线程1显示num，就不会造成死锁；
+                最终代码如下
              */
 
             Task.Run(() =>
