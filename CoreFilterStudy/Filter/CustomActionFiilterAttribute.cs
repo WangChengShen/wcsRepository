@@ -24,6 +24,22 @@ namespace CoreFilterStudy.Filter
         }
     }
 
+    /// <summary>
+    /// 也可以直接继承ActionFilterAttribute来实现
+    /// </summary>
+    //public class CustomActionFiilterAttribute : ActionFilterAttribute
+    //{
+    //    public override void OnActionExecuting(ActionExecutingContext context)
+    //    {
+    //        base.OnActionExecuting(context);
+    //    }
+
+    //    public override void OnActionExecuted(ActionExecutedContext context)
+    //    {
+    //        base.OnActionExecuted(context);
+    //    }
+    //}
+
     /*思考：如果把方法过滤器分别加到方法上，控制器上，全局上，会怎么执行
      可以通过以下方式验证，把CustomActionFiilterAttribute加载方法上，CustomControllerFiilterAttribute加载控制器上，
      CustomGlobalFiilterAttribute加载全局

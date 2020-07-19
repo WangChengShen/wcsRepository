@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace CoreFilterStudy.Filter
 {
+    /// <summary>
+    /// 自己实现filter的工厂，和serviceFile的实现是一样的
+    /// </summary>
     public class CustomFilterFactoryAttribute : Attribute, IFilterFactory
     {
         private Type _filterType = null;

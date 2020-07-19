@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -23,9 +26,12 @@ namespace CoreFilterStudy.Filter
             ServiceFilter是第4种的封装，TypeFilter在此基础又进一步，但本质上2,3,4是一样的
         */
         private readonly ILogger<CustomExceptionFilterAttribute> _logger;
-        public CustomExceptionFilterAttribute(ILogger<CustomExceptionFilterAttribute> logger)
+        private readonly IModelMetadataProvider modelMetadataProvider;
+        public CustomExceptionFilterAttribute(ILogger<CustomExceptionFilterAttribute> logger,
+            IModelMetadataProvider modelMetadataProvider)
         {
             _logger = logger;
+            this.modelMetadataProvider = modelMetadataProvider;
         }
 
 
@@ -43,15 +49,50 @@ namespace CoreFilterStudy.Filter
                 Console.WriteLine($"路径：{context.HttpContext.Request.Path}，错误信息：{context.Exception.Message}");
 
                 _logger.LogError($"路径：{context.HttpContext.Request.Path}，错误信息：{context.Exception.Message}");
-                context.Result = new JsonResult(new
-                {
-                    Result = false,
-                    Message = "发生错误，请联系管理员"
-                });
-                context.ExceptionHandled = true;//处理过了设置为true
 
+                if (IsAjaxRequest(context.HttpContext.Request))
+                {
+                    context.Result = new JsonResult(new
+                    {
+                        Result = false,
+                        Message = "发生错误，请联系管理员"
+                    });
+                }
+                else
+                {
+                    // context.Result = new RedirectResult("/Views/Shared/Error.cshtml"); //直接跳转页面
+
+                    //把错误信息传到页面里面
+                    var result = new ViewResult { ViewName = "~/Views/Shared/Error.cshtml" };
+                    result.ViewData = new ViewDataDictionary(modelMetadataProvider, context.ModelState);
+                    result.ViewData.Add("Exception", context.Exception); 
+                    context.Result = result; 
+                }
+                context.ExceptionHandled = true;//处理过了设置为true 
             }
             // base.OnException(context);去掉
+        }
+
+        /// <summary>
+        /// 异步版本
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        //public override Task OnExceptionAsync(ExceptionContext context)
+        //{
+        //    return base.OnExceptionAsync(context);
+        //}
+
+
+        /// <summary>
+        /// 在core里面没有封装判断是否是Ajax的请求方法，自己封装一下，Ajax的请求是XmlHttpRequest发起的，
+        /// 只需要判断头部X-Requested-with是否等于XMLHttpRequest即可
+        /// </summary> 
+        /// <returns></returns>
+        private bool IsAjaxRequest(HttpRequest request)
+        {
+            string header = request.Headers["X-Requested-with"];
+            return "XMLHttpRequest".Equals(header);
         }
     }
 }

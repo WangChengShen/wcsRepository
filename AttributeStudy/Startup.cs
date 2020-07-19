@@ -60,11 +60,11 @@ namespace AttributeStudy
         public void ConfigureServices(IServiceCollection services)
         {
             #region 配置文件的读取 
-            //单独读取某一个配置文件
+            //单独读取某一个配置文件,取一个对象的一个字段用“：”冒号，取一个数据的第几个也用“：”冒号，如“：0”取第一个；
             string name = Configuration.GetValue<string>("Name");
             string name2 = Configuration["Name"];
             string Default = Configuration.GetValue<string>("Logging:LogLevel:Default");
-
+           
             //全部绑定：把配置文件整个绑定到一个类里面
             var appSetting = new AppSetting();
             Configuration.Bind(appSetting);
@@ -103,7 +103,15 @@ namespace AttributeStudy
             #endregion
 
             //web项目会有这个service
-            services.AddControllersWithViews();
+            /*
+             Net Core Mvc 不像.Net Framwork Mvc里面在页面改了东西会自动编译，
+             直接刷新页面东西就可以直接看到，但是在core里面不可以了要编译下，
+             如果还想像.Net Framwork Mvc里面的话，
+             要nug引入一Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation.dll，
+             然后AddRazorRuntimeCompilation()配置下；
+             */
+            services.AddControllersWithViews()
+                .AddRazorRuntimeCompilation();
         }
 
         /// <summary>
