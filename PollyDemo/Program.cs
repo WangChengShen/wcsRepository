@@ -63,7 +63,7 @@ namespace PollyDemo
                  8, // 10秒内至少执行了8次操作
                  TimeSpan.FromSeconds(30));//熔断30秒
 
-            //4.超时策略
+            //4.超时策略 超过3秒则触发
             Policy.Timeout(3).Execute(() => { Console.WriteLine("超时后执行"); }); //超时3秒后执行逻辑
 
             //5.舱壁隔离策略
@@ -106,6 +106,20 @@ namespace PollyDemo
             //    throw new Exception("error");//抛出错误出发策略
             //});
 
+            //断路器，
+            Policy.Handle<Exception>()
+                .CircuitBreaker(
+                2,//连续触发2次异常后进入到熔断状态，熔断时间为1分钟
+                TimeSpan.FromMinutes(1));
+
+            //高级断路器
+            Policy.Handle<Exception>()
+                .AdvancedCircuitBreaker(
+                0.5,//故障数量大于50%
+                TimeSpan.FromSeconds(10),//10秒采样时间
+                8,//10秒内至少执行了8次操作，低于8次即使全部异常也不会触发熔断
+                TimeSpan.FromSeconds(30)//熔断时间30秒
+                );
 
             //下面测试下该微服务的例子
             //策略描述：
@@ -120,6 +134,9 @@ namespace PollyDemo
             用Ctril+f5跑起来该控制台，别调试因为throw 异常会报错；
             */
 
+
+            #region 
+            /*
             {
                 var seviceProvider = new ConsulServiceProvider("http://127.0.0.1:8500");
                 var serviceBuilder = seviceProvider.CreateServiceBuilder(builder =>
@@ -151,11 +168,31 @@ namespace PollyDemo
                 }
 
 
+            }*/
+            #endregion demo2 可以用来做一个动作后每隔一段时间后重试某一个动作 
+            {
+                //可以用来做一个动作后每隔一段时间后重试某一个动作
+                var retryPolicy = Policy.HandleResult<TestResult>(aa => aa.Result == false)
+                    .WaitAndRetry(3,
+                    i => TimeSpan.FromSeconds(2),
+                    (exception, span, retryCount, arg4) => //每次重试的时候都会执行的动作，一般用来做日志
+                    {
+                        Console.WriteLine($"{DateTime.Now} - 重试 {retryCount} 次");
+                    });
+
+                retryPolicy.Execute(SendMessage);
             }
+        }
 
+        public class TestResult
+        {
+            public bool Result { get; set; }
+            public string Message { get; set; }
+        }
 
-
-            //Console.WriteLine("Hello World!");
+        static TestResult SendMessage()
+        {
+            return new TestResult { Result = false, Message = "" };
         }
     }
 }
