@@ -18,7 +18,6 @@ namespace MiddleWareFlow
             {
                 return async context =>
                 {
-
                     Console.WriteLine("中间件1 Begin");
                     await next(context);
                     Console.WriteLine("中间件1 end");
@@ -53,8 +52,6 @@ namespace MiddleWareFlow
             //    //whiteLog(path, "中间件2号 End");
             //    Console.WriteLine("中间件2号 End");
             //});
-
-
 
             // 这时候管道已经形成，执行第一个中间件，就会依次调用下一个
             // 主机创建以后运行的
