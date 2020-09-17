@@ -303,6 +303,7 @@ namespace RabbitMq.SendDemo.Controllers
                     var consumer = new RabbitMQ.Client.Events.EventingBasicConsumer(channel);
                     consumer.Received += (model, ea) =>
                     {
+                        //每一次请求的唯一标识
                         string corrId = ea.BasicProperties.CorrelationId;
 
                         if (resultDic.Keys.Contains(corrId))//如果包含这个corrId,则把结果赋值给对应的TaskCompletionSource
