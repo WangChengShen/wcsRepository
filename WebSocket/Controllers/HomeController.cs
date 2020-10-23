@@ -50,28 +50,28 @@ namespace WebSocket.Controllers
                 SocketManger.AddSocket(name, Guid.NewGuid().ToString(), socket);
 
                 CancellationToken token = new CancellationToken();
+                string userMessage2 = await ReceiveStringAsync(socket);
+                //while (socket.State == WebSocketState.Open)
+                //{
+                //    //ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[8192]);
+                //    //WebSocketReceiveResult result = await socket.ReceiveAsync(buffer, token); 
+                //    //string userMessage = Encoding.UTF8.GetString(buffer.Array, 0, result.Count);
 
-                while (socket.State == WebSocketState.Open)
-                {
-                    //ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[8192]);
-                    //WebSocketReceiveResult result = await socket.ReceiveAsync(buffer, token); 
-                    //string userMessage = Encoding.UTF8.GetString(buffer.Array, 0, result.Count);
-
-                    string userMessage = await ReceiveStringAsync(socket);
+                //    string userMessage = await ReceiveStringAsync(socket);
 
 
-                    if (!string.IsNullOrEmpty(userMessage))
-                    {
-                        //if (result.MessageType == WebSocketMessageType.Close)
-                        //{
+                //    if (!string.IsNullOrEmpty(userMessage))
+                //    {
+                //        //if (result.MessageType == WebSocketMessageType.Close)
+                //        //{
 
-                        //}
-                        //else
-                        //{
-                        SocketManger.SendOne(userMessage, token);
-                        //}
-                    }
-                } 
+                //        //}
+                //        //else
+                //        //{
+                //        SocketManger.SendOne(userMessage, token);
+                //        //}
+                //    }
+                //} 
             }
             else
             {
@@ -101,9 +101,15 @@ namespace WebSocket.Controllers
                 result = await socket.ReceiveAsync(buffer, default(CancellationToken));
             }
 
-            var json = Encoding.UTF8.GetString(buffer.Array);
-            json = json.Replace("\0", "").Trim();
-            return json;
+            //var json = Encoding.UTF8.GetString(buffer.Array);
+            //json = json.Replace("\0", "").Trim();
+            //return json;
+
+            //ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[8192]);
+            //WebSocketReceiveResult result = await socket.ReceiveAsync(buffer, CancellationToken.None);
+            string userMessage = Encoding.UTF8.GetString(buffer.Array, 0, result.Count);
+
+            return userMessage;
         }
 
         public IActionResult Privacy()

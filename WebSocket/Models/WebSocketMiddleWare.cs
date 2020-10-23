@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,25 +31,59 @@ namespace WebSocket.Models
             if (httpContext.WebSockets.IsWebSocketRequest)
             {
                 System.Net.WebSockets.WebSocket socket = await httpContext.WebSockets.AcceptWebSocketAsync();
+                string name = httpContext.Request.Query["name"].ToString();
+                while (socket.State == WebSocketState.Open)
+                {
+                    //保存起来
+                    SocketManger.AddSocket(name, Guid.NewGuid().ToString(), socket);
 
-                ArraySegment<byte> arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes("服务器向客户端发消息"));
+                    string userMessage = await ReceiveStringAsync(socket);
 
-                var cancellationToken = new CancellationToken();
-                await socket.SendAsync(arraySegment, System.Net.WebSockets.WebSocketMessageType.Text, true, cancellationToken);
-
-                await _next(httpContext);
+                    SocketManger.SendOne(userMessage, CancellationToken.None);
+                }
             }
             else
             {
-                await httpContext.Response.WriteAsync("我不处理");
+                await _next(httpContext);
+            }
+        }
+
+        //public async Task<string> ReceiveStringAsync(System.Net.WebSockets.WebSocket webSocket)
+        //{
+        //    var buffer = new ArraySegment<byte>(new byte[8192]);
+        //    WebSocketReceiveResult result = await webSocket.ReceiveAsync(buffer, CancellationToken.None);
+        //    while (!result.CloseStatus.HasValue)
+        //    {
+        //        //await webSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
+
+        //        result = await webSocket.ReceiveAsync(buffer, CancellationToken.None);
+        //    }
+        //}
+
+        private async Task<string> ReceiveStringAsync(System.Net.WebSockets.WebSocket socket)
+        {
+            var buffer = new ArraySegment<byte>(new byte[8192]);
+            var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
+            while (!result.EndOfMessage)
+            {
+                result = await socket.ReceiveAsync(buffer, default(CancellationToken));
             }
 
+            //var json = Encoding.UTF8.GetString(buffer.Array);
+            //json = json.Replace("\0", "").Trim();
+            //return json;
+
+            //ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[8192]);
+            //WebSocketReceiveResult result = await socket.ReceiveAsync(buffer, CancellationToken.None);
+            string userMessage = Encoding.UTF8.GetString(buffer.Array, 0, result.Count);
+
+            return userMessage;
         }
     }
 
     public static class WebSocketMiddleWareExstion
     {
-        public static IApplicationBuilder UseWebSocket(this IApplicationBuilder applicationBuilder)
+        public static IApplicationBuilder UseWebSocketMiddleWare(this IApplicationBuilder applicationBuilder)
         {
             return applicationBuilder.UseMiddleware<WebSocketMiddleWare>();
         }

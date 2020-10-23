@@ -13,12 +13,15 @@ namespace WebSocket.Models
 
         public static void AddSocket(string name, string guid, System.Net.WebSockets.WebSocket socket)
         {
-            socketModels.Add(new SocketModel
+            if (socketModels.Count(s => s.Name == name) <= 0)
             {
-                Name = name,
-                Guid = guid,
-                Socket = socket
-            });
+                socketModels.Add(new SocketModel
+                {
+                    Name = name,
+                    Guid = guid,
+                    Socket = socket
+                });
+            }
         }
 
         public static void SendOne(string msg, CancellationToken cancellationToken)
