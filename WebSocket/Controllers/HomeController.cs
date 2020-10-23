@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -34,6 +35,10 @@ namespace WebSocket.Controllers
 
         /// <summary>
         /// ！！！注意：在Configure方法中添加 app.UseWebSockets();
+        /// 
+        /// core webSocket 此demo暂未实现，获取信息时老是报链接已关闭
+        /// 不获取信息，仅发送信息没问题
+        /// 
         /// </summary>
         public async void MyWebSocket(string name)
         {
@@ -48,23 +53,25 @@ namespace WebSocket.Controllers
 
                 while (socket.State == WebSocketState.Open)
                 {
-                    ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[8192]);
-                    WebSocketReceiveResult result = await socket.ReceiveAsync(buffer, token);
+                    //ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[8192]);
+                    //WebSocketReceiveResult result = await socket.ReceiveAsync(buffer, token); 
+                    //string userMessage = Encoding.UTF8.GetString(buffer.Array, 0, result.Count);
 
-                    string userMessage = Encoding.UTF8.GetString(buffer.Array, 0, result.Count);
+                    string userMessage = await ReceiveStringAsync(socket);
+
 
                     if (!string.IsNullOrEmpty(userMessage))
                     {
-                        if (result.MessageType == WebSocketMessageType.Close)
-                        {
+                        //if (result.MessageType == WebSocketMessageType.Close)
+                        //{
 
-                        }
-                        else
-                        {
-                            SocketManger.SendOne(userMessage, token);
-                        }
+                        //}
+                        //else
+                        //{
+                        SocketManger.SendOne(userMessage, token);
+                        //}
                     }
-                }
+                } 
             }
             else
             {
@@ -72,7 +79,32 @@ namespace WebSocket.Controllers
             }
         }
 
+        private async Task Echo(System.Net.WebSockets.WebSocket webSocket)
+        {
+            var buffer = new byte[1024 * 4];
+            WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+            while (!result.CloseStatus.HasValue)
+            {
+                await webSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
 
+                result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+            }
+            await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+        }
+
+        private async Task<string> ReceiveStringAsync(System.Net.WebSockets.WebSocket socket)
+        {
+            var buffer = new ArraySegment<byte>(new byte[8192]);
+            var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
+            while (!result.EndOfMessage)
+            {
+                result = await socket.ReceiveAsync(buffer, default(CancellationToken));
+            }
+
+            var json = Encoding.UTF8.GetString(buffer.Array);
+            json = json.Replace("\0", "").Trim();
+            return json;
+        }
 
         public IActionResult Privacy()
         {

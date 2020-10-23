@@ -45,8 +45,22 @@ namespace WebSocket
           
             app.UseRouting();
 
-            app.UseWebSockets();
+            var webSocketOptions = new WebSocketOptions()
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(120),
+                ReceiveBufferSize = 4 * 1024
+            };
+            app.UseWebSockets(webSocketOptions);
 
+            //app.Use(async (context, next) => {
+            //    var socket = await context.WebSockets.AcceptWebSocketAsync();
+            //    var socketFinishedTcs = new TaskCompletionSource<object>();
+
+            //    BackgroundSocketProcessor.AddSocket(socket, socketFinishedTcs);
+
+            //    await socketFinishedTcs.Task;
+            //});
+             
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

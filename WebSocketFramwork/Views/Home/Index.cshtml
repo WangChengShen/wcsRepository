@@ -1,14 +1,18 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewBag.Title = "Home Page";
 }
 
-@*<div class="text-center">
-        <h1 class="display-4">Welcome</h1>
-        <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    </div>*@
-<script src="~/lib/jquery/dist/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<style>
+    #webSocketTable {
+        margin: 10px;
+    }
 
-<table>
+        #webSocketTable td {
+            padding: 5px;
+        }
+</style>
+<table id="webSocketTable">
     <tr>
         <td colspan="3" id="Tip"></td>
     </tr>
@@ -37,7 +41,7 @@
 <script type="text/javascript">
 
     //1.webSocket连接地址，协议是ws
-    var url = "ws://localhost:64424/Home/MyWebSocket";
+    var url = "ws://localhost:52016/Home/MyWebSocket";
     var socket;
     function connectSocket() {
         var webSocketUrl = url + "?name=" + $("#UserName").val();
@@ -60,7 +64,7 @@
         }
         //连接关闭的时候触发
         socket.onclose = function () {
-            $("#Tip").append("连接已关闭");
+            $("#Tip").text("连接已关闭");
         }
     }
 
