@@ -34,9 +34,20 @@ namespace SwaggerTest
              */
             services.AddSwaggerGen(option =>
             {
-                option.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                /*swagger 分组功能：
+                 * 1.在这里创建多个SwaggerDoc，name是分组的名称
+                 * 2.在Config里面创建多个SwaggerEndpoint，
+                 * 3.给控制器或则方法打上    [ApiExplorerSettings(GroupName = "gkBpoApi")]
+                 */
+
+                option.SwaggerDoc("group1", new Microsoft.OpenApi.Models.OpenApiInfo
                 {
-                    Title = "SwaggerTest",
+                    Title = "wcs接口api1",
+                    Version = "version1" //这个是自己定的
+                });
+                option.SwaggerDoc("group2", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "wcs接口api2",
                     Version = "version1" //这个是自己定的
                 });
 
@@ -86,10 +97,10 @@ namespace SwaggerTest
             app.UseSwaggerUI(option =>
             {
                 //一个小坑，第一个参数中的v1要和上面的ConfigureServices方法的v1一样
-                option.SwaggerEndpoint("/swagger/v1/swagger.json", "swaggerTest");
+                option.SwaggerEndpoint("/swagger/group1/swagger.json", "group1");
+                option.SwaggerEndpoint("/swagger/group2/swagger.json", "group2");
             });
-
-
+             
             //跨域
             app.UseCors();
 

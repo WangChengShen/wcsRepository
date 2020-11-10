@@ -13,6 +13,7 @@ namespace SwaggerTest.Controllers
     [EnableCors("Any")]//设置允许跨域
     [ApiController]
     [Route("api/[controller]")]
+    [ApiExplorerSettings(GroupName = "group1")]
     public class StudentController : ControllerBase
     {
         private readonly ILogger<StudentController> _logger;

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace SwaggerTest.Controllers
 {
+    [ApiExplorerSettings(GroupName = "group2")]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
