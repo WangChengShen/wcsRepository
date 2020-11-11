@@ -12,10 +12,10 @@ namespace GrpcClient
     ///     2.Grpc.Net.Client
     ///     3.Grpc.Tools
     /// 2.把grpc服务的protos文件夹粘贴过来
-    /// 3.项目文件配置（.csproj）文件配置）（双击项目打开）
-    ///    <ItemGroup>
-    ///        <Protobuf Include = "Protos\greet.proto" GrpcServices="Server" />
-    ///      </ItemGroup>
+    /// 3.项目文件配置（.csproj）文件配置）（双击项目打开）(此配置新版的会自动加上，但是要把GrpcServices配置改为Client)
+    ///  <ItemGroup>
+    ///    <Protobuf Include = "Protos\greet.proto" GrpcServices="Client" />
+    ///  </ItemGroup>
     ///      
     /// 4.编译该项目，会根据配置生成请求服务的所有到的类
     /// </summary>
@@ -24,21 +24,50 @@ namespace GrpcClient
         static void Main(string[] args)
         {
             //1、建立连接
-            GrpcChannel grpcChannel = GrpcChannel.ForAddress("https://localhost:5001");
+            //GrpcChannel grpcChannel = GrpcChannel.ForAddress("https://localhost:5002");
 
-            // 2、客户端创建
-            GreeterClient greeterClient = new Greeter.GreeterClient(grpcChannel);
+            //// 2、客户端创建
+            //GreeterClient greeterClient = new Greeter.GreeterClient(grpcChannel);
 
-            // 3、开始调用   
-            HelloReply helloReply = greeterClient.SayHello(new HelloRequest()
+            ////// 3、开始调用   
+            //HelloReply helloReply = greeterClient.SayHello(new HelloRequest()
+            //{
+            //    Name = "grpc客户端"
+            //});
+
+            //// 3、开始调用   
+            //GetUserListResp resp = greeterClient.GetUserList(new GetUserListReq()
+            //{
+            //    Name = "GetUserList"
+            //});
+
+            //// 4、打印
+            //Console.WriteLine($"返回值打印：1:{helloReply.Message};2:{resp.UserListInfo}");
+
+            //grpcChannel.Dispose();
+
+
+            using (GrpcChannel grpcChannel = GrpcChannel.ForAddress("https://localhost:5002"))
             {
-                Name = "grpc客户端"
-            });
+                // 2、客户端创建
+                GreeterClient greeterClient = new Greeter.GreeterClient(grpcChannel);
 
-            // 4、打印
-            Console.WriteLine($"返回值打印：{helloReply.Message}");
+                //// 3、开始调用   
+                HelloReply helloReply = greeterClient.SayHello(new HelloRequest()
+                {
+                    Name = "grpc客户端"
+                });
 
-            grpcChannel.Dispose();
+                // 3、开始调用   
+                GetUserListResp resp = greeterClient.GetUserList(new GetUserListReq()
+                {
+                    Name = "GetUserList"
+                });
+
+                // 4、打印
+                Console.WriteLine($"返回值打印：1:{helloReply.Message};2:{resp.UserListInfo}");
+            } 
+
         }
     }
 }

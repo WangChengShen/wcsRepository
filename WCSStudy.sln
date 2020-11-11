@@ -128,7 +128,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Crawler", "Crawler\Crawler.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Socket", "Socket", "{526C7A12-B15B-4351-BC16-A2E5E2559167}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocket", "WebSocket\WebSocket.csproj", "{D81279D9-F609-42B2-97C6-7BF70CDA7DA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebSocket", "WebSocket\WebSocket.csproj", "{D81279D9-F609-42B2-97C6-7BF70CDA7DA0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocketFramwork", "WebSocketFramwork\WebSocketFramwork.csproj", "{036EEAB3-17E1-4F29-9ECC-DB4AFB2FB9DB}"
 EndProject

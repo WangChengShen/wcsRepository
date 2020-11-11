@@ -63,30 +63,30 @@ namespace ORMExplore
             #endregion
 
             #region 数据验证
-            //CompanyModel companyModel = new CompanyModel
-            //{
-            //    LinkMan = "王二",
-            //    CName = "速派!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
-            //    Address = "上海",
-            //    CreateTime = DateTime.Now,
-            //    Handset = "15110011001"
-            //};
+            CompanyModel companyModel = new CompanyModel
+            {
+                LinkMan = "王二",
+                CName = "速派!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+                Address = "上海",
+                CreateTime = DateTime.Now,
+                Handset = "15110011001"
+            };
 
-            //bool result = ValidataExtend.Validate<CompanyModel>(companyModel, out string errorMsg);
-            //Console.WriteLine($"验证结果：{result}，错误信息：{errorMsg}");
+            bool result = ValidataExtend.Validate<CompanyModel>(companyModel, out string errorMsg);
+            Console.WriteLine($"验证结果：{result}，错误信息：{errorMsg}");
 
-            //CompanyModel companyModel2= new CompanyModel
-            //{
-            //    LinkMan = "王二",
-            //    CName = "速派12",
-            //    Address = "上海",
-            //    CreateTime = DateTime.Now,
-            //    Handset = "151100110012"
-            //};
+            CompanyModel companyModel2 = new CompanyModel
+            {
+                LinkMan = "王二",
+                CName = "速派12",
+                Address = "上海",
+                CreateTime = DateTime.Now,
+                Handset = "151100110012"
+            };
 
-            //bool result2 = ValidataExtend.Validate<CompanyModel>(companyModel2, out string errorMsg2);
+            bool result2 = ValidataExtend.Validate<CompanyModel>(companyModel2, out string errorMsg2);
 
-            //Console.WriteLine($"验证结果：{result2}，错误信息：{errorMsg2}");
+            Console.WriteLine($"验证结果：{result2}，错误信息：{errorMsg2}");
             #endregion
 
 
