@@ -12,7 +12,7 @@ namespace GrpcClient
     ///     2.Grpc.Net.Client
     ///     3.Grpc.Tools
     /// 2.把grpc服务的protos文件夹粘贴过来
-    /// 3.项目文件配置（.csproj）文件配置）（双击项目打开）(此配置新版的会自动加上，但是要把GrpcServices配置改为Client)
+    /// 3.项目文件配置（.csproj）文件配置）（双击项目打开）(此配置新版的会自动加上，但是要把GrpcServices配置改为Client,否则GreeterClient会找不到命名空间)
     ///  <ItemGroup>
     ///    <Protobuf Include = "Protos\greet.proto" GrpcServices="Client" />
     ///  </ItemGroup>
