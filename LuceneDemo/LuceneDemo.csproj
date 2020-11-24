@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lucene.Net" Version="3.0.3" />
+    <PackageReference Include="PanGu.HighLight" Version="1.0.0" />
+    <PackageReference Include="PanGu.Lucene.Analyzer" Version="0.0.2" />
+  </ItemGroup>
+
+
+
+</Project>
