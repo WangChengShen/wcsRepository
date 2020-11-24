@@ -127,7 +127,7 @@ namespace RabbitMq.Processor
                             };
 
                             //注意（之前理解有误）：取消息的时候不绑定交换机，根据队列取就可以了
-                            channel.BasicConsume(queue: "OrderOnly",
+                            channel.BasicConsume(queue: "OrderOnly2",
                                          autoAck: true,
                                          consumer: consumer);
                             Console.WriteLine(" Press [enter] to exit.");

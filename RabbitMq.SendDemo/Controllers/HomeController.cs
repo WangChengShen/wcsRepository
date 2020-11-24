@@ -263,7 +263,12 @@ namespace RabbitMq.SendDemo.Controllers
             factory.Password = "gkbpo123";//密码
             factory.VirtualHost = "newbpo";
             #endregion
-
+            /*
+             * 发布消息，消息找队列，常用3种路由方式：
+             Direct：根据路由键进行，消息发送到该交换机且绑定有该路由键的队列；
+             Fanout：广播模式，忽略路由键，消息会发送到绑定在交换机上面的所有队列；
+             Topic：类似Direct，但是匹配路由键可以根据匹配符进行匹配队列；
+             */
             using (var conn = factory.CreateConnection())//创建连接
             {
                 using (IModel channel = conn.CreateModel()) //创建对象
@@ -275,6 +280,12 @@ namespace RabbitMq.SendDemo.Controllers
                        autoDelete: false,
                        arguments: null);
 
+                    channel.QueueDeclare(queue: "OrderOnly2",
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null);
+
                     //声明交换机
                     channel.ExchangeDeclare(exchange: "OrderOnlyChange",
                            type: ExchangeType.Direct,
@@ -282,10 +293,15 @@ namespace RabbitMq.SendDemo.Controllers
                            autoDelete: false,
                            arguments: null);
 
-                    //队列绑定到交换机
+                    //队列绑定到交换机，路由Key:OrderOnlyKey
                     channel.QueueBind(queue: "OrderOnly",
                                  exchange: "OrderOnlyChange",
-                                 routingKey: string.Empty, arguments: null);
+                                 routingKey: "OrderOnlyKey", arguments: null);
+
+                    //绑定到交换机，路由Key:OrderOnlyKey2
+                    channel.QueueBind(queue: "OrderOnly2",
+                              exchange: "OrderOnlyChange",
+                              routingKey: "OrderOnlyKey2", arguments: null);
 
                     Console.WriteLine("准备就绪,开始写入~~~");
 
@@ -343,8 +359,9 @@ namespace RabbitMq.SendDemo.Controllers
                         var result = new TaskCompletionSource<string>();
                         resultDic.Add(corrId, result);
 
+                        //因为发送时指定路由key为OrderOnlyKey2，所以消息只会推送到OrderOnly2队列
                         channel.BasicPublish(exchange: "OrderOnlyChange",
-                                        routingKey: string.Empty,
+                                        routingKey: "OrderOnlyKey2",
                                         basicProperties: props, //加上basicProperties参数，绑定回复队列
                                         body: body);
 
@@ -390,6 +407,7 @@ namespace RabbitMq.SendDemo.Controllers
                        autoDelete: false,
                        arguments: null);
 
+                    //绑定队列
                     channel.QueueBind(queue: "OrderAll",
                                 exchange: "OrderAllChangeFanout",
                                 routingKey: string.Empty,
