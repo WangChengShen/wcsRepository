@@ -1,0 +1,43 @@
+﻿@model List<LuceneNetDemo.Models.Bpo_JobEntity>
+@{
+    ViewBag.Title = "SearchResult";
+    int num = 1;
+    Layout = null;
+}
+
+<h2>搜索结果</h2>
+@if (Model != null && Model.Count > 0)
+{
+    <table border="1">
+        <tr>
+            <td>编号</td>
+            <td>Id</td>
+            <td>标题</td>
+            <td>用户Id</td>
+            <td>用户名称</td>
+            <td>企业Id</td>
+            <td>企业名称</td>
+            <td>工单地址</td>
+            <td>发单时间</td>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@(num++)</td>
+                <td>@item.Id</td>
+                <td>@item.Title</td>
+                <td>@item.UserId</td>
+                <td>@item.UserName</td>
+                <td>@item.CompanyId</td>
+                <td>@item.CompanyName</td>
+                <td>@item.FullAddress</td>
+                <td>@item.CreateDate</td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <span>未查询到数据</span>
+}
+
