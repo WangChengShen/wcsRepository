@@ -22,7 +22,7 @@ namespace LuceneNetDemo.Controllers
         {
             return View();
         }
-        /*
+        /* 
             Analysis：分词器，负责把字符串拆分成原子，包含了标准分词，直接空格拆分项目中用的是盘古中文分词
             Document:数据结构，定义存储数据的格式
             Index:索引的读写类
