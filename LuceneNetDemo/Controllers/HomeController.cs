@@ -1,4 +1,5 @@
-﻿using Lucene.Net.Analysis;
+﻿using log4net;
+using Lucene.Net.Analysis;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
@@ -10,105 +11,124 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
 namespace LuceneNetDemo.Controllers
 {
+    /// <summary>
+    /// 创建.Net Framwork Web项目，不支持Core Web
+    /// 需引入以下dll：
+    /// Lucene.Net
+    /// PanGu.HighLight
+    /// PanGu.Lucene.Analyzer
+    /// 
+    /// 常用的工具类：
+    /// Analysis：分词器，负责把字符串拆分成原子，包含了标准分词，直接空格拆分项目中用的是盘古中文分词
+    /// Document:数据结构，定义存储数据的格式
+    /// Index:索引的读写类
+    /// QueryParser:查询解析器，负责解析查询语句
+    /// Search：负责各种查询类，命令解析后得到就是查询类
+    /// Store：索引存储类，负责文件夹等等；
+    /// Util:常见工具类库；
+    /// </summary>
     public class HomeController : Controller
     {
+        ILog logHelper = log4net.LogManager.GetLogger("HomeController");
         public string path = "F://LuceneIndexDir";
         public ActionResult Index()
         {
+            /*
+             1.nuget 引入Log4net.dll
+             2.项目启动初始化log4net
+             3.像下面这样进行使用
+             */
+            logHelper.Info("HomeController-Index");
             return View();
         }
-        /* 
-            Analysis：分词器，负责把字符串拆分成原子，包含了标准分词，直接空格拆分项目中用的是盘古中文分词
-            Document:数据结构，定义存储数据的格式
-            Index:索引的读写类
-            QueryParser:查询解析器，负责解析查询语句
-            Search：负责各种查询类，命令解析后得到就是查询类
-            Store：索引存储类，负责文件夹等等；
-            Util:常见工具类库；
-         */
 
         /// <summary>
-        /// 创建.Net Framwork Web项目，不支持Core Web
-        /// 需引入以下dll：
-        /// Lucene.Net
-        /// PanGu.HighLight
-        /// PanGu.Lucene.Analyzer
+        ///单线程创建索引
         /// </summary>
         /// <returns></returns>
         public int CreateIndex()
         {
-            List<Bpo_JobEntity> jobList = JobRepository.GetJobList(1000);
-            /*
-             问题：
-             运行时会报找不到\Dict\Dict.dct的问题，解决办法：因为此文件在上一级目录里面，把Dict文件夹粘贴到bin文件夹里面即可；
-             */
-            if (!System.IO.Directory.Exists(path))
-            {
-                System.IO.Directory.CreateDirectory(path);
-            }
-            FSDirectory directory = FSDirectory.Open(path);
+            List<Bpo_JobEntity> jobList = JobRepository.GetJobList(1, 1000);
+            LuceneBuild luceneBuild = new LuceneBuild();
+            return luceneBuild.BuildIndex(jobList, path) ? 1 : 0;
+        }
 
-            //IndexReader:对索引进行读取的类。该语句的作用：判断索引库文件夹是否存在以及索引特征文件是否存在。
-            bool isUpdate = IndexReader.IndexExists(directory);
-            if (isUpdate)
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        List<string> childDirList = new List<string>();
+        public int CreateIndexMutiThread(int taskCount)
+        {
+            List<Task> taskList = new List<Task>();
+            for (int i = 1; i <= taskCount; i++)
             {
-                //同时只能有一段代码对索引库进行写操作。当使用IndexWriter打开directory时会自动对索引库文件上锁。
-                //如果索引目录被锁定（比如索引过程中程序异常退出），则首先解锁（提示一下：如果我现在正在写着已经加锁了，但是还没有写完，这时候又来一个请求，那么不就解锁了吗？这个问题后面会解决）
-                if (IndexWriter.IsLocked(directory))
+                string childPath = $"{path}//{i.ToString("000")}";
+                childDirList.Add(childPath);
+                logHelper.Info($"createIndexMutiThread{i}");
+                Task task = Task.Run(() =>
                 {
-                    IndexWriter.Unlock(directory);
-                }
+                    createIndexMutiThread(i, cancellationTokenSource, childPath, true);
+                });
+                taskList.Add(task);
+                Thread.Sleep(200);
             }
 
-            //分词规则：一元分词（一个字符分一组）、二元分词(两个字符一组)、盘古分词（一般用这个）
-            using (IndexWriter writer = new IndexWriter(directory, new PanGuAnalyzer(), !isUpdate, IndexWriter.MaxFieldLength.LIMITED))
-            {
-                //控制写入一个新的segent前内存中保存的doc的数量，默认是10，在这里设置100，也就是每生成100个doc后才写一次，提高效率
-                writer.SetMaxBufferedDocs(100);
-                /*控制多个segment合并的评率，默认是10，在这里设置为100，指多个线程进行生产索引时，为了解决文件锁的问题，所以每个线程会生成一个文件夹，
-                 文件夹里面索引生成多少个之后进行合并*/
-                writer.MergeFactor = 100;
-                writer.UseCompoundFile = true;//创建复合文件，减少索引文件数量
-                foreach (var item in jobList)
-                {
-                    Document document = new Document();//一条数据
-
-                    //一个字段，列名，值，是否保存值，是否分词
-                    //Field.Store.NO 代表不存值，这样就不会生产索引，取值时为null 
-                    document.Add(new NumericField("Id", Field.Store.YES, true).SetIntValue(item.Id));
-                    document.Add(new Field("Title", item.Title ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                    document.Add(new NumericField("UserId", Field.Store.YES, true).SetIntValue(item.UserId));
-                    document.Add(new Field("UserName", item.UserName.ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                    document.Add(new NumericField("CompanyId", Field.Store.YES, true).SetIntValue(item.CompanyId));
-                    document.Add(new Field("CompanyName", item.CompanyName.ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                    document.Add(new Field("FullAddress", item.FullAddress ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                    // document.Add(new NumericField("CreateTime", Field.Store.YES, true).SetIntValue(int.Parse(item.CreateTime.ToString("yyyyMMdd"))));
-                    document.Add(new Field("CreateDate", item.CreateDate.ToString("yyyy-MM-dd HH:mm:ss"), Field.Store.YES, Field.Index.NOT_ANALYZED));
-                    writer.AddDocument(document);
-                }
-
-                writer.Optimize();//优化，合并
-            }
+            taskList.Add(Task.Factory.ContinueWhenAll(taskList.ToArray(), mergeIndex));
+            Task.WaitAll(taskList.ToArray());  //为了展示出多线程的异常
+            logHelper.Debug(cancellationTokenSource.IsCancellationRequested ? "失败" : "成功");
             return 1;
         }
 
-        //public int DeleteIndex()
-        //{
-        //    FSDirectory directory = FSDirectory.Open(path);
 
-        //    using (IndexReader reader = IndexReader.Open(directory))
-        //    {
-        //        Term term = new Term("path",path);
-        //        int deleted = reader.Delete(term);
-        //    } 
-             
-        
-        //}
+        private bool createIndexMutiThread(int taskCount,
+            CancellationTokenSource cancellationTokenSource, string rootIndexPath, bool isCreate = false)
+        {
+            try
+            {
+                if (!cancellationTokenSource.IsCancellationRequested)
+                {
+                    int pageNum = taskCount;
+                    List<Bpo_JobEntity> jobList = JobRepository.GetJobList(pageNum, 800);
+
+                    new LuceneBuild().BuildIndexMutiThread(jobList, rootIndexPath, true);
+                    logHelper.Info($"线程{taskCount}完成1000数据");
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                logHelper.Error($"线程{taskCount}出现异常", ex);
+                cancellationTokenSource.Cancel();
+            }
+            return false;
+        }
+
+        private bool mergeIndex(Task[] tasks)
+        {
+            try
+            {
+                if (cancellationTokenSource.IsCancellationRequested)
+                {
+                    return false;
+                }
+                LuceneBuild luceneBuild = new LuceneBuild();
+
+                luceneBuild.MergeIndex(path, childDirList.ToArray());
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                logHelper.Error($"合并索引出现异常", ex);
+                return false;
+            }
+        }
+
 
         /// <summary>
         /// 根据关键字进行查询，就像sql的like一样
@@ -246,7 +266,7 @@ namespace LuceneNetDemo.Controllers
             {
                 intFilter = NumericRangeFilter.NewIntRange("Id", MinId, MaxId, true, true);
             }
-            
+
             //定义排序
             SortField sortField = new SortField("Id", SortField.INT, false);//降序
             SortField sortField2 = new SortField("CompanyId", SortField.INT, false);//降序
@@ -287,10 +307,30 @@ namespace LuceneNetDemo.Controllers
             IndexReader reader = IndexReader.Open(dir, true);//查询器
             IndexSearcher searcher = new IndexSearcher(reader);
 
-            //搜索条件，可以同时制定多个搜索条件
-            PhraseQuery query = new PhraseQuery(); //其实是多个TeamQuery的集合
-            query.Add(new Term("Title", Title));//Title中含有Title的工单
-            query.Add(new Term("Title", Title.Substring(0, 1)));//Title中含有Title的工单
+            //搜索条件，BooleanQuery可以同时制定多个搜索条件  
+            BooleanQuery booleanQuery = new BooleanQuery();
+            //Query query = new TermQuery(new Term("Title", $"*{Title}*"));//不支持通配符 
+            //Query query = new WildcardQuery(new Term("Title", $"*{Title}*")); // 通配符 
+
+            if (!string.IsNullOrEmpty(Title))//空格隔开，按照多个词进行搜索
+            {
+                Title = new LuceneAnalyze().AnalyzerKeyword("Title", Title); 
+                QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, "Title", new PanGuAnalyzer());
+                Query query = parser.Parse(Title);
+                booleanQuery.Add(query, Occur.MUST);
+            }
+
+            if (!string.IsNullOrEmpty(FullAddress))
+            {
+                FullAddress = new LuceneAnalyze().AnalyzerKeyword("FullAddress", FullAddress);
+                QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, "FullAddress", new PanGuAnalyzer());
+                Query query = parser.Parse(FullAddress);
+                booleanQuery.Add(query, Occur.MUST);
+
+                //使用WildcardQuery，相当于sql的like
+                //Query query2 = new WildcardQuery(new Term("FullAddress", $"*{FullAddress}*")); // 通配符 
+                //booleanQuery.Add(query2, Occur.MUST);
+            }
 
             //根据id区间区间搜索
             NumericRangeFilter<int> intFilter = null;
@@ -313,7 +353,7 @@ namespace LuceneNetDemo.Controllers
             Sort sort = new Sort(sortField, sortField2);
 
             //取搜索结果方法1：
-            TopDocs docs = searcher.Search(query, intFilter, 1000, sort);//找到的结果取100条数据
+            TopDocs docs = searcher.Search(booleanQuery, intFilter, 10000, sort);//找到的结果取100条数据
             foreach (ScoreDoc sd in docs.ScoreDocs) //从docs.ScoreDocs取数据
             {
                 Document doc = searcher.Doc(sd.Doc);
@@ -337,11 +377,13 @@ namespace LuceneNetDemo.Controllers
             //List<Bpo_JobEntity> studentModels = SearchJobList(Title);
             //List<Bpo_JobEntity> studentModels = SearchJobList2(Title);
 
-            List<Bpo_JobEntity> studentModels = SearchJobList3(Title, MinId, MaxId);
-            //List<Bpo_JobEntity> studentModels = SearchJobList4(Title, FullAddress, MinId, MaxId);
+            // List<Bpo_JobEntity> studentModels = SearchJobList3(Title, MinId, MaxId);
+            List<Bpo_JobEntity> studentModels = SearchJobList4(Title, FullAddress, MinId, MaxId);
 
             return View(studentModels);
         }
+
+
 
 
     }
