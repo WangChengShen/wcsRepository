@@ -22,5 +22,14 @@ namespace LuceneNetDemo.Repository
                 return conn.Query<Bpo_JobEntity>(sql).ToList();
             }
         }
+        public static Bpo_JobEntity GetJobById(int jobId)
+        {
+            using (DbConnection conn = new SqlConnection(connStr))
+            {
+                string sql = $@"select * from Bpo_Job
+                                where status = 1 and Id=@Id";
+                return conn.Query<Bpo_JobEntity>(sql, new { Id = jobId }).FirstOrDefault();
+            }
+        }
     }
 }

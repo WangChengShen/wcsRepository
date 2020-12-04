@@ -19,8 +19,8 @@ namespace LuceneNetDemo.Repository
     {
         #region  批量BuildIndex 索引合并 
 
-        public bool BuildIndex( List<Bpo_JobEntity> jobList,string rootIndexPath )
-        { 
+        public bool BuildIndex(List<Bpo_JobEntity> jobList, string rootIndexPath)
+        {
             /* 问题：
              运行时会报找不到\Dict\Dict.dct的问题，解决办法：因为此文件在上一级目录里面，把Dict文件夹粘贴到bin文件夹里面即可；
              */
@@ -53,21 +53,9 @@ namespace LuceneNetDemo.Repository
                 writer.UseCompoundFile = true;//创建复合文件，减少索引文件数量
                 foreach (var item in jobList)
                 {
-                    Document document = new Document();//一条数据
-
-                    //一个字段，列名，值，是否保存值，是否分词
-                    //Field.Store.NO 代表不存值，这样就不会生产索引，取值时为null 
-                    document.Add(new NumericField("Id", Field.Store.YES, true).SetIntValue(item.Id));
-                    document.Add(new Field("Title", item.Title ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                    document.Add(new NumericField("UserId", Field.Store.YES, true).SetIntValue(item.UserId));
-                    document.Add(new Field("UserName", item.UserName.ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                    document.Add(new NumericField("CompanyId", Field.Store.YES, true).SetIntValue(item.CompanyId));
-                    document.Add(new Field("CompanyName", item.CompanyName.ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                    document.Add(new Field("FullAddress", item.FullAddress ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                    // document.Add(new NumericField("CreateTime", Field.Store.YES, true).SetIntValue(int.Parse(item.CreateTime.ToString("yyyyMMdd"))));
-                    document.Add(new Field("CreateDate", item.CreateDate.ToString("yyyy-MM-dd HH:mm:ss"), Field.Store.YES, Field.Index.NOT_ANALYZED));
+                    Document document = getDocument(item);
                     writer.AddDocument(document);
-                } 
+                }
                 writer.Optimize();//优化，合并
             }
             return true;
@@ -84,7 +72,7 @@ namespace LuceneNetDemo.Repository
         {
             if (jobList == null || jobList.Count == 0)
                 return;
-             
+
             System.IO.DirectoryInfo dirInfo = System.IO.Directory.CreateDirectory(rootIndexPath);
             FSDirectory directory = FSDirectory.Open(dirInfo);
             using (IndexWriter writer = new IndexWriter(directory, new PanGuAnalyzer(), isCreate, IndexWriter.MaxFieldLength.LIMITED))
@@ -95,19 +83,7 @@ namespace LuceneNetDemo.Repository
 
                 foreach (var item in jobList)
                 {
-                    Document document = new Document();//一条数据
-
-                    //一个字段，列名，值，是否保存值，是否分词
-                    //Field.Store.NO 代表不存值，这样就不会生产索引，取值时为null 
-                    document.Add(new NumericField("Id", Field.Store.YES, true).SetIntValue(item.Id));
-                    document.Add(new Field("Title", item.Title ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                    document.Add(new NumericField("UserId", Field.Store.YES, true).SetIntValue(item.UserId));
-                    document.Add(new Field("UserName", item.UserName??"".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                    document.Add(new NumericField("CompanyId", Field.Store.YES, true).SetIntValue(item.CompanyId));
-                    document.Add(new Field("CompanyName", item.CompanyName??"".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                    document.Add(new Field("FullAddress", item.FullAddress ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                    // document.Add(new NumericField("CreateTime", Field.Store.YES, true).SetIntValue(int.Parse(item.CreateTime.ToString("yyyyMMdd"))));
-                    document.Add(new Field("CreateDate", item.CreateDate.ToString("yyyy-MM-dd HH:mm:ss"), Field.Store.YES, Field.Index.NOT_ANALYZED));
+                    Document document = getDocument(item);
                     writer.AddDocument(document);
                 }
                 //  writer.Optimize();//优化，合并 (多线程创建索引的时候不做优化合并，Merge的时候处理)
@@ -156,27 +132,19 @@ namespace LuceneNetDemo.Repository
 
             System.IO.DirectoryInfo footDirInfo = System.IO.Directory.CreateDirectory(rootPath);
 
-            bool isCreate = footDirInfo.GetFiles().Count() == 0;//下面没有文件则为新建索引 
+            // bool isCreate = footDirInfo.GetFiles().Count() == 0;//下面没有文件则为新建索引 
 
             FSDirectory directory = FSDirectory.Open(footDirInfo);
-            using (IndexWriter writer = new IndexWriter(directory, CreateAnalyzerWrapper(), isCreate, IndexWriter.MaxFieldLength.LIMITED))
+            // using (IndexWriter writer = new IndexWriter(directory, CreateAnalyzerWrapper(), isCreate, IndexWriter.MaxFieldLength.LIMITED))
+            using (IndexWriter writer = new IndexWriter(directory, new PanGuAnalyzer(), false, IndexWriter.MaxFieldLength.LIMITED))
             {
-                writer.MergeFactor = 100;//控制多个segment合并的频率，默认10
+                writer.MergeFactor = 2;//控制多个segment合并的频率，默认10
                 writer.UseCompoundFile = true;//创建符合文件 减少索引文件数量
-                Document document = new Document();//一条数据
 
-                //一个字段，列名，值，是否保存值，是否分词
-                //Field.Store.NO 代表不存值，这样就不会生产索引，取值时为null 
-                document.Add(new NumericField("Id", Field.Store.YES, true).SetIntValue(jobEntity.Id));
-                document.Add(new Field("Title", jobEntity.Title ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                document.Add(new NumericField("UserId", Field.Store.YES, true).SetIntValue(jobEntity.UserId));
-                document.Add(new Field("UserName", jobEntity.UserName.ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                document.Add(new NumericField("CompanyId", Field.Store.YES, true).SetIntValue(jobEntity.CompanyId));
-                document.Add(new Field("CompanyName", jobEntity.CompanyName.ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                document.Add(new Field("FullAddress", jobEntity.FullAddress ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                // document.Add(new NumericField("CreateTime", Field.Store.YES, true).SetIntValue(int.Parse(jobEntity.CreateTime.ToString("yyyyMMdd"))));
-                document.Add(new Field("CreateDate", jobEntity.CreateDate.ToString("yyyy-MM-dd HH:mm:ss"), Field.Store.YES, Field.Index.NOT_ANALYZED));
+                Document document = getDocument(jobEntity);
                 writer.AddDocument(document);
+
+                //writer.Optimize();
             }
         }
 
@@ -201,13 +169,18 @@ namespace LuceneNetDemo.Repository
         public void DeleteIndex(Bpo_JobEntity jobEntity, string rootIndexPath)
         {
             if (jobEntity == null) return;
-            Analyzer analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_30);
+            //Analyzer analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_30);
 
             System.IO.DirectoryInfo dirInfo = System.IO.Directory.CreateDirectory(rootIndexPath);
             FSDirectory directory = FSDirectory.Open(dirInfo);
+            //using (IndexWriter writer = new IndexWriter(directory, new PanGuAnalyzer(), false, IndexWriter.MaxFieldLength.LIMITED))
+            //{
             using (IndexReader reader = IndexReader.Open(directory, false))
             {
                 reader.DeleteDocuments(new Term("Id", jobEntity.Id.ToString()));
+
+                //writer.Commit();
+                //writer.Optimize();
             }
         }
 
@@ -230,7 +203,7 @@ namespace LuceneNetDemo.Repository
                 }
             }
         }
-         
+
         /// <summary>
         /// 更新一条数据的索引
         /// </summary>
@@ -243,26 +216,13 @@ namespace LuceneNetDemo.Repository
             bool isCreate = dirInfo.GetFiles().Count() == 0;//下面没有文件则为新建索引 
 
             FSDirectory directory = FSDirectory.Open(dirInfo);
-            using (IndexWriter writer = new IndexWriter(directory, CreateAnalyzerWrapper(), isCreate, IndexWriter.MaxFieldLength.LIMITED))
+            using (IndexWriter writer = new IndexWriter(directory, new PanGuAnalyzer() /*CreateAnalyzerWrapper()*/, isCreate, IndexWriter.MaxFieldLength.LIMITED))
             {
                 writer.MergeFactor = 100;//控制多个segment合并的频率，默认10
                 writer.UseCompoundFile = true;//创建符合文件 减少索引文件数量
 
-                Document document = new Document();//一条数据
-
-                //一个字段，列名，值，是否保存值，是否分词
-                //Field.Store.NO 代表不存值，这样就不会生产索引，取值时为null 
-                document.Add(new NumericField("Id", Field.Store.YES, true).SetIntValue(job.Id));
-                document.Add(new Field("Title", job.Title ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                document.Add(new NumericField("UserId", Field.Store.YES, true).SetIntValue(job.UserId));
-                document.Add(new Field("UserName", job.UserName.ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                document.Add(new NumericField("CompanyId", Field.Store.YES, true).SetIntValue(job.CompanyId));
-                document.Add(new Field("CompanyName", job.CompanyName.ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                document.Add(new Field("FullAddress", job.FullAddress ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-                // document.Add(new NumericField("CreateTime", Field.Store.YES, true).SetIntValue(int.Parse(job.CreateTime.ToString("yyyyMMdd"))));
-                document.Add(new Field("CreateDate", job.CreateDate.ToString("yyyy-MM-dd HH:mm:ss"), Field.Store.YES, Field.Index.NOT_ANALYZED));
-
-                writer.UpdateDocument(new Term("Id", job.Id.ToString()), document);
+                Document document = getDocument(job);
+                writer.UpdateDocument(new Term("Id", job.Id.ToString()), document);//注意：Id生成索引时要用Field，而不能是NumericField
             }
 
         }
@@ -281,5 +241,25 @@ namespace LuceneNetDemo.Repository
             }
         }
         #endregion
+
+        private Document getDocument(Bpo_JobEntity jobEntity)
+        {
+            Document document = new Document();//一条数据
+
+            //一个字段，列名，值，是否保存值，是否分词
+            //Field.Store.NO 代表不存值，这样就不会生产索引，取值时为null 
+            //document.Add(new NumericField("Id", Field.Store.YES, true).SetIntValue(item.Id)); //存储为NumericField,可以根据数据进行搜索
+            document.Add(new Field("Id", jobEntity.Id.ToString(), Field.Store.YES, Field.Index.ANALYZED));
+            document.Add(new Field("Title", jobEntity.Title ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
+            document.Add(new NumericField("UserId", Field.Store.YES, true).SetIntValue(jobEntity.UserId));
+            document.Add(new Field("UserName", jobEntity.UserName ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
+            document.Add(new NumericField("CompanyId", Field.Store.YES, true).SetIntValue(jobEntity.CompanyId));
+            document.Add(new Field("CompanyName", jobEntity.CompanyName ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
+            document.Add(new Field("FullAddress", jobEntity.FullAddress ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
+            // document.Add(new NumericField("CreateTime", Field.Store.YES, true).SetIntValue(int.Parse(jobEntity.CreateTime.ToString("yyyyMMdd"))));
+            document.Add(new Field("CreateDate", jobEntity.CreateDate.ToString("yyyy-MM-dd HH:mm:ss"), Field.Store.YES, Field.Index.NOT_ANALYZED));
+
+            return document;
+        }
     }
 }

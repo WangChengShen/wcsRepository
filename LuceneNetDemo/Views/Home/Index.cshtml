@@ -2,15 +2,34 @@
     ViewBag.Title = "Home Page";
 }
 <script src="~/Scripts/jquery-3.4.1.js"></script>
+<style>
+    .searchTable td {
+        padding: 5px;
+    }
+
+    .resultTable td {
+        padding: 5px;
+    }
+</style>
 <div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p>
-        <a href="#" onclick="createIndexMutiThread()" class="btn btn-primary btn-lg">多线程生成索引</a>
-        <a href="#" onclick="createIndex()" class="btn btn-primary btn-lg">生成索引</a>
-        &nbsp;&nbsp;<a href="#" onclick="searchJob()" class="btn btn-primary btn-lg">搜索</a>
-    </p>
-    <table>
+    <table class="searchTable">
+        <tr>
+            <td>批量</td>
+            <td>
+                <a href="#" onclick="createIndexMutiThread()" class="btn btn-primary btn-lg">多线程生成索引</a>
+                <a href="#" onclick="createIndex()" class="btn btn-primary btn-lg">生成索引</a>
+            </td>
+        </tr>
+        <tr>
+            <td>单条</td>
+            <td>
+                <a href="#" onclick="insertIndex(31729)" class="btn btn-primary btn-lg">插入索引(31729)</a>
+                <a href="#" onclick="deleteIndex(10925)" class="btn btn-primary btn-lg">删除索引(10925)</a>
+                <a href="#" onclick="updateIndex(9021)" class="btn btn-primary btn-lg">更新索引(9021)</a>
+            </td>
+        </tr>
+    </table>
+    <table class="searchTable">
         <tr>
             <td>标题</td>
             <td colspan="2"><input type="text" name="Title" id="Title" value="" /></td>
@@ -23,6 +42,12 @@
         <tr>
             <td>地址</td>
             <td colspan="2"><input type="text" name="FullAddress" id="FullAddress" value="" /></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan="2">
+                <a href="#" onclick="searchJob()" class="btn btn-primary btn-lg">搜索</a>
+            </td>
         </tr>
     </table>
 </div>
@@ -40,10 +65,40 @@
             }
         })
     }
-      function createIndexMutiThread() {
-          $.post("/Home/CreateIndexMutiThread", {"taskCount":10}, function (re) {
+    function createIndexMutiThread() {
+        $.post("/Home/CreateIndexMutiThread", { "taskCount": 10 }, function (re) {
             if (re == 1) {
                 alert("已成功生产索引");
+            }
+            else {
+                alert("错误");
+            }
+        })
+    }
+    function insertIndex(jobId) {
+        $.post("/Home/InsertIndex", { "jobId": jobId }, function (re) {
+            if (re == 1) {
+                alert("已成功生产索引");
+            }
+            else {
+                alert("错误");
+            }
+        })
+    }
+    function deleteIndex(jobId) {
+        $.post("/Home/DeleteIndex", { "jobId": jobId }, function (re) {
+            if (re == 1) {
+                alert("已成功移除索引");
+            }
+            else {
+                alert("错误");
+            }
+        })
+    }
+    function updateIndex(jobId) {
+        $.post("/Home/UpdateIndex", { "jobId": jobId }, function (re) {
+            if (re == 1) {
+                alert("已成功更新索引");
             }
             else {
                 alert("错误");

@@ -60,6 +60,7 @@ namespace LuceneNetDemo.Controllers
             return luceneBuild.BuildIndex(jobList, path) ? 1 : 0;
         }
 
+        #region 多线程生成索引 
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         List<string> childDirList = new List<string>();
         public int CreateIndexMutiThread(int taskCount)
@@ -83,7 +84,6 @@ namespace LuceneNetDemo.Controllers
             logHelper.Debug(cancellationTokenSource.IsCancellationRequested ? "失败" : "成功");
             return 1;
         }
-
 
         private bool createIndexMutiThread(int taskCount,
             CancellationTokenSource cancellationTokenSource, string rootIndexPath, bool isCreate = false)
@@ -128,7 +128,54 @@ namespace LuceneNetDemo.Controllers
                 return false;
             }
         }
+        #endregion
 
+        #region 单条操作
+        /// <summary>
+        /// 新增一条数据的索引
+        /// </summary>
+        /// <param name="jobId"></param>
+        /// <returns></returns>
+        public int InsertIndex(int jobId)
+        {
+            Bpo_JobEntity jobEntity = JobRepository.GetJobById(jobId);
+            if (jobEntity == null) return 0;
+
+            LuceneBuild luceneBuild = new LuceneBuild();
+            luceneBuild.InsertIndex(jobEntity, path);
+            return 1;
+        }
+        /// <summary>
+        /// 删除一条数据的索引
+        /// </summary>
+        /// <param name="jobId"></param>
+        /// <returns></returns>
+        public int DeleteIndex(int jobId)
+        {
+            Bpo_JobEntity jobEntity = JobRepository.GetJobById(jobId);
+            if (jobEntity == null) return 0;
+
+            LuceneBuild luceneBuild = new LuceneBuild();
+            luceneBuild.DeleteIndex(jobEntity, path);
+            return 1;
+        }
+
+        /// <summary>
+        /// 更新一条数据的索引
+        /// </summary>
+        /// <param name="jobId"></param>
+        /// <returns></returns>
+        public int UpdateIndex(int jobId)
+        {
+            Bpo_JobEntity jobEntity = JobRepository.GetJobById(jobId);
+            if (jobEntity == null) return 0;
+            jobEntity.UserName = "王承申";
+
+            LuceneBuild luceneBuild = new LuceneBuild();
+            luceneBuild.UpdateIndex(jobEntity, path);
+            return 1;
+        }
+        #endregion
 
         /// <summary>
         /// 根据关键字进行查询，就像sql的like一样
@@ -314,9 +361,16 @@ namespace LuceneNetDemo.Controllers
 
             if (!string.IsNullOrEmpty(Title))//空格隔开，按照多个词进行搜索
             {
-                Title = new LuceneAnalyze().AnalyzerKeyword("Title", Title); 
+                Title = new LuceneAnalyze().AnalyzerKeyword("Title", Title);
                 QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, "Title", new PanGuAnalyzer());
                 Query query = parser.Parse(Title);
+                booleanQuery.Add(query, Occur.MUST);
+            }
+            if (MinId > 0)//空格隔开，按照多个词进行搜索
+            {
+                //string idStr = new LuceneAnalyze().AnalyzerKeyword("Id", MinId.ToString());
+                QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, "Id", new PanGuAnalyzer());
+                Query query = parser.Parse(MinId.ToString());
                 booleanQuery.Add(query, Occur.MUST);
             }
 
@@ -332,23 +386,23 @@ namespace LuceneNetDemo.Controllers
                 //booleanQuery.Add(query2, Occur.MUST);
             }
 
-            //根据id区间区间搜索
+            //根据id区间区间搜索(此时id存储索引时要是NumericField类型)
             NumericRangeFilter<int> intFilter = null;
-            if (MinId > 0 && MaxId == 0)
-            {
-                intFilter = NumericRangeFilter.NewIntRange("Id", MinId, int.MaxValue, true, true);
-            }
-            else if (MaxId > 0 && MinId == 0)
-            {
-                intFilter = NumericRangeFilter.NewIntRange("Id", 0, MaxId, true, true);
-            }
-            else if (MaxId > 0 && MinId > 0)
-            {
-                intFilter = NumericRangeFilter.NewIntRange("Id", MinId, MaxId, true, true);
-            }
+            //if (MinId > 0 && MaxId == 0)
+            //{
+            //    intFilter = NumericRangeFilter.NewIntRange("Id", MinId, int.MaxValue, true, true);
+            //}
+            //else if (MaxId > 0 && MinId == 0)
+            //{
+            //    intFilter = NumericRangeFilter.NewIntRange("Id", 0, MaxId, true, true);
+            //}
+            //else if (MaxId > 0 && MinId > 0)
+            //{
+            //    intFilter = NumericRangeFilter.NewIntRange("Id", MinId, MaxId, true, true);
+            //}
 
             //定义排序
-            SortField sortField = new SortField("Id", SortField.INT, false);//降序
+            SortField sortField = new SortField("Id", SortField.STRING, false);//降序
             SortField sortField2 = new SortField("CompanyId", SortField.INT, false);//降序
             Sort sort = new Sort(sortField, sortField2);
 
