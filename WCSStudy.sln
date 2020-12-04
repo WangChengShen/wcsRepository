@@ -136,6 +136,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lucene.Net", "Lucene.Net", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuceneNetDemo", "LuceneNetDemo\LuceneNetDemo.csproj", "{A6AD0212-1301-4AA5-8276-FA00062CDACB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentSchedulerDemo", "FluentSchedulerDemo\FluentSchedulerDemo.csproj", "{DEE350DA-0C48-41C6-B886-F683BF8A64AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -326,6 +328,10 @@ Global
 		{A6AD0212-1301-4AA5-8276-FA00062CDACB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6AD0212-1301-4AA5-8276-FA00062CDACB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6AD0212-1301-4AA5-8276-FA00062CDACB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEE350DA-0C48-41C6-B886-F683BF8A64AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEE350DA-0C48-41C6-B886-F683BF8A64AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEE350DA-0C48-41C6-B886-F683BF8A64AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEE350DA-0C48-41C6-B886-F683BF8A64AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
