@@ -23,7 +23,7 @@ namespace FluentSchedulerDemo
             //每月的第一个周一的15：00触发
             //Schedule<MessageTask>().ToRunEvery(1).Months().OnTheFirst(DayOfWeek.Monday).At(15,0);
 
-            //时间点触发
+            //在指定时间点触发
             //DateTime dateTime = Convert.ToDateTime("2020-12-04 16:55:00");
             //Schedule<MessageTask>().ToRunOnceAt(dateTime);
 

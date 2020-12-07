@@ -15,6 +15,9 @@ using WebSocket.Models;
 
 namespace WebSocket.Controllers
 {
+    /// <summary>
+    /// core项目未实现
+    /// </summary>
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

@@ -11,4 +11,10 @@ namespace SwaggerTest.Controllers
         public string Message {  get; set; }
         public T Data { get; set; }
     }
+    public class WcsJosnResult 
+    {
+        public int Result { get; set; }
+        public string Message { get; set; }
+        public object Data { get; set; }
+    }
 }

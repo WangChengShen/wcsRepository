@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SwaggerTest.Web;
 using Wcs.BLL;
 using Wcs.DAL;
 
@@ -76,7 +77,14 @@ namespace SwaggerTest
             services.AddTransient<IStudentDAL, StudentDAL>();
             services.AddTransient<IStudentBLL, StudentBLL>();
 
-            services.AddControllers();
+            //禁用model自动验证行为,设置在filter里面或则在方法里面进行验证参数model
+            services.Configure<ApiBehaviorOptions>(option => { option.SuppressModelStateInvalidFilter = true; });
+
+            services.AddControllers(option =>
+            {
+                //添加全局的filter
+                option.Filters.Add<ModelValidActionFilter>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -100,7 +108,7 @@ namespace SwaggerTest
                 option.SwaggerEndpoint("/swagger/group1/swagger.json", "group1");
                 option.SwaggerEndpoint("/swagger/group2/swagger.json", "group2");
             });
-             
+
             //跨域
             app.UseCors();
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SwaggerTest.Models;
 using Wcs.BLL;
 using Wcs.Models;
 
@@ -67,6 +68,21 @@ namespace SwaggerTest.Controllers
             };
         }
 
+        /// <summary>
+        /// core api model 验证
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        [Route("SignUp")]
+        [HttpPost]
+        public WcsJosnResult SignUp([FromBody]SignUpReq req)
+        {
+            //不在方法里面进行验证，改到方法filter里面进行统一验证
+            //if (!ModelState.IsValid)
+            //    return new WcsJosnResult { Result = 0, Message = ModelState.FirstOrDefault().Value.Errors.FirstOrDefault().ErrorMessage };
+
+            return new WcsJosnResult { Result = 1, Message = "已成功报名" };
+        }
 
     }
 }
