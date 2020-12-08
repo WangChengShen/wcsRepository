@@ -55,7 +55,7 @@ namespace LuceneNetDemo.Controllers
         /// <returns></returns>
         public int CreateIndex()
         {
-            List<Bpo_JobEntity> jobList = JobRepository.GetJobList(1, 1000);
+            List<Bpo_JobEntity> jobList = DataRepository.GetJobList(1, 1000);
             LuceneBuild luceneBuild = new LuceneBuild();
             return luceneBuild.BuildIndex(jobList, path) ? 1 : 0;
         }
@@ -93,7 +93,7 @@ namespace LuceneNetDemo.Controllers
                 if (!cancellationTokenSource.IsCancellationRequested)
                 {
                     int pageNum = taskCount;
-                    List<Bpo_JobEntity> jobList = JobRepository.GetJobList(pageNum, 800);
+                    List<Bpo_JobEntity> jobList = DataRepository.GetJobList(pageNum, 800);
 
                     new LuceneBuild().BuildIndexMutiThread<Bpo_JobEntity>(jobList, rootIndexPath, true);
                     logHelper.Info($"线程{taskCount}完成1000数据");
@@ -138,7 +138,7 @@ namespace LuceneNetDemo.Controllers
         /// <returns></returns>
         public int InsertIndex(int jobId)
         {
-            Bpo_JobEntity jobEntity = JobRepository.GetJobById(jobId);
+            Bpo_JobEntity jobEntity = DataRepository.GetJobById(jobId);
             if (jobEntity == null) return 0;
 
             LuceneBuild luceneBuild = new LuceneBuild();
@@ -152,7 +152,7 @@ namespace LuceneNetDemo.Controllers
         /// <returns></returns>
         public int DeleteIndex(int jobId)
         {
-            Bpo_JobEntity jobEntity = JobRepository.GetJobById(jobId);
+            Bpo_JobEntity jobEntity = DataRepository.GetJobById(jobId);
             if (jobEntity == null) return 0;
 
             LuceneBuild luceneBuild = new LuceneBuild();
@@ -167,7 +167,7 @@ namespace LuceneNetDemo.Controllers
         /// <returns></returns>
         public int UpdateIndex(int jobId)
         {
-            Bpo_JobEntity jobEntity = JobRepository.GetJobById(jobId);
+            Bpo_JobEntity jobEntity = DataRepository.GetJobById(jobId);
             if (jobEntity == null) return 0;
             jobEntity.UserName = "王承申";
 
