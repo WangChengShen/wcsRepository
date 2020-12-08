@@ -15,11 +15,11 @@ namespace LuceneNetDemo.Repository
     /// <summary>
     /// 索引创建
     /// </summary>
-    public class LuceneBuild
+    public class JobLuceneBuild
     {
         #region  批量BuildIndex 索引合并 
 
-        public bool BuildIndex<T>(List<T> objList, string rootIndexPath)
+        public bool BuildIndex(List<Bpo_JobEntity> jobList, string rootIndexPath)
         {
             /* 问题：
              运行时会报找不到\Dict\Dict.dct的问题，解决办法：因为此文件在上一级目录里面，把Dict文件夹粘贴到bin文件夹里面即可；
@@ -51,7 +51,7 @@ namespace LuceneNetDemo.Repository
                  文件夹里面索引生成多少个之后进行合并*/
                 writer.MergeFactor = 100;
                 writer.UseCompoundFile = true;//创建复合文件，减少索引文件数量
-                foreach (var item in objList)
+                foreach (var item in jobList)
                 {
                     Document document = getDocument(item);
                     writer.AddDocument(document);
@@ -65,12 +65,12 @@ namespace LuceneNetDemo.Repository
         /// <summary>
         /// 多线程批量创建索引(要求是统一的sourceflag，即目录是一致的)
         /// </summary>
-        /// <param name="list">sourceflag统一的</param>
+        /// <param name="jobList">sourceflag统一的</param>
         /// <param name="pathSuffix">索引目录后缀，加在电商的路径后面，为空则为根目录.如sa\1</param>
         /// <param name="isCreate">默认为false 增量索引  true的时候删除原有索引</param>
-        public void BuildIndexMutiThread<T>(List<T> list, string rootIndexPath, bool isCreate = false)
+        public void BuildIndexMutiThread(List<Bpo_JobEntity> jobList, string rootIndexPath, bool isCreate = false)
         {
-            if (list == null || list.Count == 0)
+            if (jobList == null || jobList.Count == 0)
                 return;
 
             System.IO.DirectoryInfo dirInfo = System.IO.Directory.CreateDirectory(rootIndexPath);
@@ -81,7 +81,7 @@ namespace LuceneNetDemo.Repository
                 writer.MergeFactor = 100;//控制多个segment合并的频率，默认10
                 writer.UseCompoundFile = true;//创建复合文件 减少索引文件数量
 
-                foreach (var item in list)
+                foreach (var item in jobList)
                 {
                     Document document = getDocument(item);
                     writer.AddDocument(document);
@@ -125,10 +125,10 @@ namespace LuceneNetDemo.Repository
         /// <summary>
         /// 新增一条数据的索引
         /// </summary>
-        /// <param name="entity"></param>
-        public void InsertIndex<T>(T entity, string rootPath)
+        /// <param name="jobEntity"></param>
+        public void InsertIndex(Bpo_JobEntity jobEntity, string rootPath)
         {
-            if (entity == null) return;
+            if (jobEntity == null) return;
 
             System.IO.DirectoryInfo footDirInfo = System.IO.Directory.CreateDirectory(rootPath);
 
@@ -141,7 +141,7 @@ namespace LuceneNetDemo.Repository
                 writer.MergeFactor = 2;//控制多个segment合并的频率，默认10
                 writer.UseCompoundFile = true;//创建符合文件 减少索引文件数量
 
-                Document document = getDocument(entity);
+                Document document = getDocument(jobEntity);
                 writer.AddDocument(document);
 
                 //writer.Optimize();
@@ -166,9 +166,9 @@ namespace LuceneNetDemo.Repository
         /// 删除指定的索引
         /// </summary>
         /// <param name="ci"></param>
-        public void DeleteIndex<T>(T entity, string filedName, string rootIndexPath)
+        public void DeleteIndex(Bpo_JobEntity jobEntity, string rootIndexPath)
         {
-            if (entity == null) return;
+            if (jobEntity == null) return;
             //Analyzer analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_30);
 
             System.IO.DirectoryInfo dirInfo = System.IO.Directory.CreateDirectory(rootIndexPath);
@@ -177,16 +177,8 @@ namespace LuceneNetDemo.Repository
             //{
             using (IndexReader reader = IndexReader.Open(directory, false))
             {
-                //reader.DeleteDocuments(new Term("Id", entity.Id.ToString()));
+                reader.DeleteDocuments(new Term("Id", jobEntity.Id.ToString()));
 
-                Type type = entity.GetType();
-                var property = type.GetProperty(filedName);
-
-                string filedVal = property.GetValue(entity)?.ToString() ?? "null";
-                if (filedVal != "null")
-                {
-                    reader.DeleteDocuments(new Term(filedName, filedVal));
-                }
                 //writer.Commit();
                 //writer.Optimize();
             }
@@ -195,28 +187,19 @@ namespace LuceneNetDemo.Repository
         /// <summary>
         /// 批量删除数据的索引
         /// </summary>
-        /// <param name="list"></param>
-        public void DeleteIndexMuti<T>(List<T> list, string filedName, string rootIndexPath)
+        /// <param name="jobList"></param>
+        public void DeleteIndexMuti(List<Bpo_JobEntity> jobList, string rootIndexPath)
         {
-            if (list == null || list.Count == 0) return;
+            if (jobList == null || jobList.Count == 0) return;
             Analyzer analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_30);
 
             System.IO.DirectoryInfo dirInfo = System.IO.Directory.CreateDirectory(rootIndexPath);
             FSDirectory directory = FSDirectory.Open(dirInfo);
             using (IndexReader reader = IndexReader.Open(directory, false))
             {
-                foreach (T entity in list)
+                foreach (Bpo_JobEntity job in jobList)
                 {
-                    //reader.DeleteDocuments(new Term("Id", job.Id.ToString()));
-
-                    Type type = entity.GetType();
-                    var property = type.GetProperty(filedName);
-
-                    string filedVal = property.GetValue(entity)?.ToString() ?? "null";
-                    if (filedVal != "null")
-                    {
-                        reader.DeleteDocuments(new Term(filedName, filedVal));
-                    }
+                    reader.DeleteDocuments(new Term("Id", job.Id.ToString()));
                 }
             }
         }
@@ -225,9 +208,9 @@ namespace LuceneNetDemo.Repository
         /// 更新一条数据的索引
         /// </summary>
         /// <param name="ci"></param>
-        public void UpdateIndex<T>(T entity, string filedName, string rootIndexPath)
+        public void UpdateIndex(Bpo_JobEntity job, string rootIndexPath)
         {
-            if (entity == null) return;
+            if (job == null) return;
             System.IO.DirectoryInfo dirInfo = System.IO.Directory.CreateDirectory(rootIndexPath);
 
             bool isCreate = dirInfo.GetFiles().Count() == 0;//下面没有文件则为新建索引 
@@ -238,19 +221,8 @@ namespace LuceneNetDemo.Repository
                 writer.MergeFactor = 100;//控制多个segment合并的频率，默认10
                 writer.UseCompoundFile = true;//创建符合文件 减少索引文件数量
 
-                Document document = getDocument(entity);
-
-                //writer.UpdateDocument(new Term("Id", entity.Id.ToString()), document);//注意：Id生成索引时要用Field，而不能是NumericField
-
-                Type type = entity.GetType();
-                var property = type.GetProperty(filedName);
-
-                string filedVal = property.GetValue(entity)?.ToString() ?? "null";
-                if (filedVal != "null")
-                {
-                    writer.UpdateDocument(new Term(filedName, filedVal), document);
-                }
-
+                Document document = getDocument(job);
+                writer.UpdateDocument(new Term("Id", job.Id.ToString()), document);//注意：Id生成索引时要用Field，而不能是NumericField
             }
 
         }
@@ -258,68 +230,36 @@ namespace LuceneNetDemo.Repository
         /// <summary>
         /// 批量更新数据的索引
         /// </summary>
-        /// <param name="list">sourceflag统一的</param>
-        public void UpdateIndexMuti<T>(List<T> list, string filedName, string rootIndexPath)
+        /// <param name="jobList">sourceflag统一的</param>
+        public void UpdateIndexMuti(List<Bpo_JobEntity> jobList, string rootIndexPath)
         {
-            if (list == null || list.Count == 0) return;
+            if (jobList == null || jobList.Count == 0) return;
 
-            foreach (var job in list)
+            foreach (var job in jobList)
             {
-                UpdateIndex(job, filedName, rootIndexPath);
+                UpdateIndex(job, rootIndexPath);
             }
         }
         #endregion
 
-        private Document getDocument<T>(T entity)
+        private Document getDocument(Bpo_JobEntity jobEntity)
         {
             Document document = new Document();//一条数据
 
             //一个字段，列名，值，是否保存值，是否分词
             //Field.Store.NO 代表不存值，这样就不会生产索引，取值时为null 
             //document.Add(new NumericField("Id", Field.Store.YES, true).SetIntValue(item.Id)); //存储为NumericField,可以根据数据进行搜索
-            /*
-             document.Add(new Field("Id", entity.Id.ToString(), Field.Store.YES, Field.Index.ANALYZED));
-             document.Add(new Field("Title", entity.Title ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-             document.Add(new NumericField("UserId", Field.Store.YES, true).SetIntValue(entity.UserId));
-             document.Add(new Field("UserName", entity.UserName ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-             document.Add(new NumericField("CompanyId", Field.Store.YES, true).SetIntValue(entity.CompanyId));
-             document.Add(new Field("CompanyName", entity.CompanyName ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-             document.Add(new Field("FullAddress", entity.FullAddress ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
-             // document.Add(new NumericField("CreateTime", Field.Store.YES, true).SetIntValue(int.Parse(jobEntity.CreateTime.ToString("yyyyMMdd"))));
-             document.Add(new Field("CreateDate", entity.CreateDate.ToString("yyyy-MM-dd HH:mm:ss"), Field.Store.YES, Field.Index.NOT_ANALYZED));
-
-             return document;
-             */
-
-            Type type = entity.GetType();
-            var properties = type.GetProperties();
-
-            foreach (var itemProp in properties)
-            {
-                string name = itemProp.Name;
-                string val = itemProp.GetValue(entity)?.ToString() ?? "null";
-
-                if (val != "null")
-                {
-                    if (name.ToLower() != "id" && itemProp.PropertyType == typeof(int))
-                    {
-                        int valInt = Convert.ToInt32(itemProp.GetValue(entity));
-                        document.Add(new NumericField(name, Field.Store.YES, true).SetIntValue(valInt));
-                    }
-                    else if (itemProp.PropertyType == typeof(DateTime))
-                    {
-                        val = Convert.ToDateTime(itemProp.GetValue(entity) ?? "1990-01-01").ToString("yyyy-MM-dd HH:mm:ss");
-                        document.Add(new Field(name, val, Field.Store.YES, Field.Index.ANALYZED));
-                    }
-                    else
-                    {
-                        document.Add(new Field(name, val, Field.Store.YES, Field.Index.ANALYZED));
-                    }
-                }
-            }
+            document.Add(new Field("Id", jobEntity.Id.ToString(), Field.Store.YES, Field.Index.ANALYZED));
+            document.Add(new Field("Title", jobEntity.Title ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
+            document.Add(new NumericField("UserId", Field.Store.YES, true).SetIntValue(jobEntity.UserId));
+            document.Add(new Field("UserName", jobEntity.UserName ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
+            document.Add(new NumericField("CompanyId", Field.Store.YES, true).SetIntValue(jobEntity.CompanyId));
+            document.Add(new Field("CompanyName", jobEntity.CompanyName ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
+            document.Add(new Field("FullAddress", jobEntity.FullAddress ?? "".ToString(), Field.Store.YES, Field.Index.ANALYZED));
+            // document.Add(new NumericField("CreateTime", Field.Store.YES, true).SetIntValue(int.Parse(jobEntity.CreateTime.ToString("yyyyMMdd"))));
+            document.Add(new Field("CreateDate", jobEntity.CreateDate.ToString("yyyy-MM-dd HH:mm:ss"), Field.Store.YES, Field.Index.NOT_ANALYZED));
 
             return document;
-
         }
     }
 }

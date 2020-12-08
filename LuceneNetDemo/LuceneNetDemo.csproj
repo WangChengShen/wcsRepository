@@ -156,6 +156,7 @@
     <Compile Include="Models\StudentModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\LuceneAnalyze.cs" />
+    <Compile Include="Repository\JobLuceneBuild.cs" />
     <Compile Include="Repository\LuceneBuild.cs" />
     <Compile Include="Repository\JobRepository.cs" />
   </ItemGroup>

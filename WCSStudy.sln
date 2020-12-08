@@ -138,6 +138,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuceneNetDemo", "LuceneNetD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentSchedulerDemo", "FluentSchedulerDemo\FluentSchedulerDemo.csproj", "{DEE350DA-0C48-41C6-B886-F683BF8A64AA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VUE", "VUE", "{569A2819-8A01-4297-8D37-1BA8C5F64454}"
+	ProjectSection(SolutionItems) = preProject
+		C:\Users\wangchengshen\Desktop\vue.html = C:\Users\wangchengshen\Desktop\vue.html
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

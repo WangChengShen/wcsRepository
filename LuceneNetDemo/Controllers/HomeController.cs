@@ -95,7 +95,7 @@ namespace LuceneNetDemo.Controllers
                     int pageNum = taskCount;
                     List<Bpo_JobEntity> jobList = JobRepository.GetJobList(pageNum, 800);
 
-                    new LuceneBuild().BuildIndexMutiThread(jobList, rootIndexPath, true);
+                    new LuceneBuild().BuildIndexMutiThread<Bpo_JobEntity>(jobList, rootIndexPath, true);
                     logHelper.Info($"线程{taskCount}完成1000数据");
                     return true;
                 }
@@ -156,7 +156,7 @@ namespace LuceneNetDemo.Controllers
             if (jobEntity == null) return 0;
 
             LuceneBuild luceneBuild = new LuceneBuild();
-            luceneBuild.DeleteIndex(jobEntity, path);
+            luceneBuild.DeleteIndex<Bpo_JobEntity>(jobEntity, "Id", path);
             return 1;
         }
 
@@ -172,7 +172,7 @@ namespace LuceneNetDemo.Controllers
             jobEntity.UserName = "王承申";
 
             LuceneBuild luceneBuild = new LuceneBuild();
-            luceneBuild.UpdateIndex(jobEntity, path);
+            luceneBuild.UpdateIndex<Bpo_JobEntity>(jobEntity,"Id", path);
             return 1;
         }
         #endregion
