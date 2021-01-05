@@ -1,0 +1,643 @@
+using Autofac;
+using Gk.MqLib;
+using Gk.NFramework.Config;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using RebbitMQHelper;
+using RebbitMQHelper.Model;
+using System;
+//using System.Data;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.ServiceProcess;
+using System.Text;
+using System.Threading;
+
+namespace GK.NewBpo.RabbitMQConsumerService
+{
+    /// <summary>
+    /// 注意服务启动时要用管理员账号，因为要读gksy.json配置文件，在webHelper发短信方法里面有用到读取gksp.json配置文件的方法
+    /// </summary>
+    public partial class Service1 : ServiceBase
+    {
+        private static Gk.NewBpo.BusinessLogic.Interface.IWebHelper webHelper;
+        private static EventingBasicConsumer consumer;
+
+        private static int environment = 0;//  0:正式环境，1：测试环境（228或1.69） 2:debug环境，3预生产
+        public Service1()
+        {
+            InitializeComponent();
+
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+        }
+
+        //服务启动触发
+        protected override void OnStart(string[] args)
+        {
+            try
+            {
+                string root = AppDomain.CurrentDomain.BaseDirectory;
+                string txtPath = Path.Combine(root, "logdir", "startlog.txt");
+                string msg = string.Format("GK.NewBpo.RebbitMQConsumer服务{0}启动", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                MQHelper.whiteLog(txtPath, msg);
+
+                environment = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["Environment"] ?? "0");
+
+                var builder = DependencyConfigure.RegisterAutofacServices();
+                using (var container = builder.Build())
+                {
+                    webHelper = container.Resolve<Gk.NewBpo.BusinessLogic.Interface.IWebHelper>();
+
+                    Thread t1 = new Thread(new ParameterizedThreadStart(HandleMsg_While));
+                    t1.Start(new para { isReject = true, taskNum = 1 });
+
+                    Thread t2 = new Thread(new ParameterizedThreadStart(HandleMsg_While));
+                    t2.Start(new para { isReject = true, taskNum = 2 });
+
+                    Thread t3 = new Thread(new ParameterizedThreadStart(HandleMsg_While));
+                    t3.Start(new para { isReject = true, taskNum = 3 });
+
+                    Thread t4 = new Thread(new ParameterizedThreadStart(HandleMsg_While));
+                    t4.Start(new para { isReject = true, taskNum = 4 });
+
+                    Thread t5 = new Thread(new ParameterizedThreadStart(HandleMsg_While));
+                    t5.Start(new para { isReject = false, taskNum = 5 });
+
+                }
+            }
+            catch (Exception ex)
+            {
+                string errorMsg = string.Format("来自“GK.NewBpo.RabbitMQConsumerService 的OnStart方法”的异常,时间：{0},详细信息如下：", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                                      + Environment.NewLine + "［Message］:" + ex.Message
+                                      + Environment.NewLine + "［InnerException］:" + ex.InnerException
+                                      + Environment.NewLine + "［Source］:" + ex.Source
+                                      + Environment.NewLine + "［TargetSite］:" + ex.TargetSite
+                                      + Environment.NewLine + "［StackTrace］:" + ex.StackTrace
+                                      + Environment.NewLine + "----------------------------------------------------------------------------------------------------------------------------";
+                string errTxtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", string.Format("errorLog_{0}.txt", DateTime.Now.ToString("yyyyMMdd")));
+                MQHelper.whiteLog(errTxtPath, errorMsg);
+            }
+        }
+
+        //服务停止触发
+        protected override void OnStop()
+        {
+            try
+            {
+                string root = AppDomain.CurrentDomain.BaseDirectory;
+                string txtPath = Path.Combine(root, "logdir", "startlog.txt");
+                string msg = string.Format("GK.NewBpo.RebbitMQConsumer服务{0}停止", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                MQHelper.whiteLog(txtPath, msg);
+
+                SendMobileMsg();
+
+                //var builder = RegisterAutofacServices();
+                //using (var container = builder.Build())
+                //{
+                //    webHelper = container.Resolve<Gk.NewBpo.BusinessLogic.Interface.IWebHelper>();
+
+                //    string errorMsg = string.Empty;
+                //    webHelper.SendJobInviteMsg(28823, 11005,0, false, out errorMsg);
+                //    SendMobileMsg();
+                //}
+
+            }
+            catch (Exception ex)
+            {
+                string errorMsg = string.Format("来自“GK.NewBpo.RabbitMQConsumerService 的OnStop方法”的异常,时间：{0},详细信息如下：", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                                      + Environment.NewLine + "［Message］:" + ex.Message
+                                      + Environment.NewLine + "［InnerException］:" + ex.InnerException
+                                      + Environment.NewLine + "［Source］:" + ex.Source
+                                      + Environment.NewLine + "［TargetSite］:" + ex.TargetSite
+                                      + Environment.NewLine + "［StackTrace］:" + ex.StackTrace
+                                      + Environment.NewLine + "----------------------------------------------------------------------------------------------------------------------------";
+                string errTxtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", string.Format("errorLog_{0}.txt", DateTime.Now.ToString("yyyyMMdd")));
+                MQHelper.whiteLog(errTxtPath, errorMsg);
+            }
+        }
+
+        #region 接受消息并处理消息
+
+        /// <summary>
+        /// 方法体用try catch捕获异常，避免服务因抛出异常停掉
+        /// </summary>
+        /// <param name="obj"></param>
+        private void HandleMsg_While(object obj)
+        {
+            para pa = obj as para;
+            bool isReject = pa.isReject;
+            int taskNum = pa.taskNum;
+
+            string errorMsg = string.Empty;
+            string exchangeName = RabbitMQReceiver.ExchangeName;
+            string exchangeType = RabbitMQReceiver.ExchangeType;
+            string queueName = RabbitMQReceiver.QueueName;
+            string routingKey = RabbitMQReceiver.RoutingKey;
+
+            #region 创建信道，接收消息进行处理
+            using (IConnection connection = RabbitMQReceiver.CreateConnection())
+            {
+                using (var channel = connection.CreateModel())
+                {
+                    string consumer_tag = string.Empty;
+                    try
+                    {
+                        // channel.ExchangeDeclare(exchange: exchangeName, type: exchangeType, durable: false, autoDelete: false, arguments: null);
+                        channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                        //channel.QueueBind(queue: queueName, exchange: exchangeName, routingKey: routingKey);
+
+                        channel.BasicQos(0, 1, false); //RabbitMQ 不要在同一时间给一个工作者发送多于1条的消息
+
+                        //创建订阅消费者
+                        QueueingBasicConsumer consumer = new QueueingBasicConsumer(channel);
+
+                        //noAck:false:手动应答（处理消息完毕后给服务器发送完毕指令），true：自动应答 
+                        consumer_tag = channel.BasicConsume(queue: queueName, autoAck: false, consumer: consumer);
+
+                        while (true)
+                        {
+                            try
+                            {
+                                #region
+                                //接收消息并出列，获取消息，如果没有消息，这一步将会一直阻塞 
+                                BasicDeliverEventArgs ea = (BasicDeliverEventArgs)consumer.Queue.Dequeue();
+                                RabbitMQMsgEntity msgEntity = null;
+                                string message = string.Empty;
+                                try
+                                {
+                                    byte[] body = ea.Body;//消息体
+                                    message = Encoding.UTF8.GetString(body);
+
+                                    #region 解决兼容问题 null -> {}
+                                    int num = message.IndexOf("paraObj");
+
+                                    if (num > 0)
+                                    {
+                                        string str = message.Substring(num, 14);
+
+                                        if (num >= 0 && str.IndexOf("null") >= 0)
+                                        {
+                                            message = message.Substring(0, num + 9) + "{}" + message.Substring(num + 13);
+                                        }
+                                    }
+                                    #endregion
+
+                                    if (!string.IsNullOrEmpty(message))
+                                    {
+                                        msgEntity = JsonConvert.DeserializeObject<RabbitMQMsgEntity>(message);
+
+
+                                        if (msgEntity != null)
+                                        {
+                                            //处理消息
+                                            bool sendResult = handleMsg(taskNum, message, msgEntity);
+
+                                            if (sendResult)//处理成功
+                                            {
+                                                channel.BasicAck(ea.DeliveryTag, false); //手动应答  
+                                            }
+                                            else //处理失败
+                                            {
+                                                if (isReject)
+                                                {
+                                                    //处理失败的消息重新放回到队列
+                                                    channel.BasicReject(ea.DeliveryTag, true);
+                                                }
+                                                else
+                                                {
+                                                    channel.BasicAck(ea.DeliveryTag, false); //手动应答
+                                                    //添加错误信息到表中
+                                                    RabbitMQErrorRepository.AddRabbitMQError(new Bpo_RabbitMQError
+                                                    {
+                                                        JobID = msgEntity.jobId,
+                                                        CompanyId = msgEntity.companyId,
+                                                        UserID = msgEntity.userId,
+                                                        JobStatus = msgEntity.jobStatus,
+                                                        SubJobStatus = msgEntity.subJobStatus,
+                                                        IsProducterError = true,
+                                                        CreateTime = DateTime.Now,
+                                                        MsgGuid = msgEntity.MsgGuid
+                                                    });
+                                                }
+
+                                                // RejectSendMsg(msgEntity);重发消息到另一个队列 
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    #region
+                                    string txtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", string.Format("errorLog_{0}.txt", DateTime.Now.ToString("yyyyMMdd")));
+
+                                    string msg = string.Format("时间:{0},线程{1}，接收到消息:{2},处理失败,错误信息:", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), taskNum, message)
+                                       + Environment.NewLine + "［Message］:" + ex.Message
+                                       + Environment.NewLine + "［InnerException］:" + ex.InnerException
+                                       + Environment.NewLine + "［Source］:" + ex.Source
+                                       + Environment.NewLine + "［TargetSite］:" + ex.TargetSite
+                                       + Environment.NewLine + "［StackTrace］:" + ex.StackTrace
+                                       + Environment.NewLine + "----------------------------------------------------------------------------------------------------------------------------";
+
+                                    //MQHelper.whiteLog(txtPath, msg);
+                                    whiteLogLimitSize(txtPath, msg);
+
+                                    channel.BasicAck(ea.DeliveryTag, false); //手动应答
+                                    if (msgEntity != null)
+                                    {
+                                        //添加错误信息到表中
+                                        RabbitMQErrorRepository.AddRabbitMQError(new Bpo_RabbitMQError
+                                        {
+                                            JobID = msgEntity.jobId,
+                                            CompanyId = msgEntity.companyId,
+                                            UserID = msgEntity.userId,
+                                            JobStatus = msgEntity.jobStatus,
+                                            SubJobStatus = msgEntity.subJobStatus,
+                                            IsProducterError = true,
+                                            CreateTime = DateTime.Now,
+                                            MsgGuid = msgEntity.MsgGuid
+                                        });
+
+                                        // RejectSendMsg(msgEntity);重发消息到另一个队列
+                                    }
+                                    #endregion
+                                }
+
+                                Thread.Sleep(500); //休眠，很重要
+                                #endregion
+                            }
+                            catch (Exception ex)
+                            {
+                                string msg = string.Format("异常1,时间：{0},详细信息如下：", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                                  + Environment.NewLine + "［Message］:" + ex.Message
+                                  + Environment.NewLine + "［InnerException］:" + ex.InnerException
+                                  + Environment.NewLine + "［Source］:" + ex.Source
+                                  + Environment.NewLine + "［TargetSite］:" + ex.TargetSite
+                                  + Environment.NewLine + "［StackTrace］:" + ex.StackTrace
+                                  + Environment.NewLine + "----------------------------------------------------------------------------------------------------------------------------";
+
+                                string errTxtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", string.Format("errorLog_{0}.txt", DateTime.Now.ToString("yyyyMMdd")));
+                                // MQHelper.whiteLog(errTxtPath, msg);
+                                whiteLogLimitSize(errTxtPath, msg);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //停止消费消息并退出
+                        //channel.BasicCancel(consumer_tag);
+                        //Environment.Exit(0);
+
+                        string msg = string.Format("异常2,时间：{0},详细信息如下：", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                                   + Environment.NewLine + "［Message］:" + ex.Message
+                                   + Environment.NewLine + "［InnerException］:" + ex.InnerException
+                                   + Environment.NewLine + "［Source］:" + ex.Source
+                                   + Environment.NewLine + "［TargetSite］:" + ex.TargetSite
+                                   + Environment.NewLine + "［StackTrace］:" + ex.StackTrace
+                                   + Environment.NewLine + "----------------------------------------------------------------------------------------------------------------------------";
+
+                        string errTxtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", string.Format("errorLog_{0}.txt", DateTime.Now.ToString("yyyyMMdd")));
+                        //MQHelper.whiteLog(errTxtPath, msg);
+                        whiteLogLimitSize(errTxtPath, msg);
+                    }
+                }
+            }
+            #endregion
+        }
+        #endregion
+
+        static bool handleMsg(int taskNum, string message, RabbitMQMsgEntity msgEntity)
+        {
+            string errorMsg = string.Empty;
+            try
+            {
+                string txtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", string.Format("log_{0}.txt", DateTime.Now.ToString("yyyyMMdd")));
+                //if (msgEntity.msgType == (int)RabbitMQMsgTypeEnum.活儿审核成功后群发消息)//活儿审核成功后群发短信(去掉2020-12-16)
+                //{
+                //    string msg = string.Format("时间:{0},线程{1}，群发消息:{2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), taskNum, message);
+                //    MQHelper.whiteLog(txtPath, msg);
+
+                //    webHelper.PushAllInfoByJob(msgEntity.jobId, out errorMsg);
+                //}
+                if (msgEntity.msgType == (int)RabbitMQMsgTypeEnum.活儿审核成功后群发消息)//活儿审核成功后群发短信(去掉2020-12-16)
+                {
+                    string msg = string.Format("时间:{0},线程{1}，自由和b2b单子发单后给距工单地址200公里或同城的前50名工程师发通知消息:{2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), taskNum, message);
+                    MQHelper.whiteLog(txtPath, msg);
+                    webHelper.SendMsgToEngineer(msgEntity.jobId, out errorMsg);
+                }
+                else if (msgEntity.msgType == (int)RabbitMQMsgTypeEnum.优惠券消息)
+                {
+                    string msg = string.Format("时间:{0},线程{1}，优惠券消息:{2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), taskNum, message);
+                    MQHelper.whiteLog(txtPath, msg);
+                    webHelper.SendCouponMsg(out errorMsg, msgEntity.userId, msgEntity.companyId);
+                }
+                else if (msgEntity.msgType == (int)RabbitMQMsgTypeEnum.邀请服务商接活发消息)
+                {
+                    string msg = string.Format("时间:{0},线程{1}，邀请服务商接活发消息:{2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), taskNum, message);
+                    MQHelper.whiteLog(txtPath, msg);
+
+                    bool isSystem = msgEntity.subJobStatus == 8;
+                    webHelper.SendJobInviteMsg(msgEntity.jobId, msgEntity.userId, msgEntity.companyId, isSystem, out errorMsg);
+                }
+                //else if (msgEntity.msgType == (int)RabbitMQMsgTypeEnum.添加关注)
+                //{
+                //    string msg = string.Format("时间:{0},线程{1}，添加关注发消息:{2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), taskNum, message);
+                //    MQHelper.whiteLog(txtPath, msg);
+                //    webHelper.SendAttentionMsg(msgEntity.fromUserId, msgEntity.fromCompanyId, msgEntity.userId, msgEntity.companyId, out errorMsg);
+                //}
+                else if (msgEntity.msgType == (int)RabbitMQMsgTypeEnum.App群发系统消息)
+                {
+                    string msg = string.Format("时间:{0},线程{1}，App群发系统消息:{2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), taskNum, message);
+                    MQHelper.whiteLog(txtPath, msg);
+                    webHelper.PushAllSystemNews(msgEntity.newsId, out errorMsg);
+                }
+                else if (msgEntity.msgType == -100)//主要为了测试服务器是否正常运行
+                {
+                    string msg = string.Format("时间:{0},线程{1}，测试消息队列和推送:{2},安卓版本号:{3}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), taskNum, message, NWebConfig.ReadSetting("AndroidAppPushFilterVersion"));
+                    MQHelper.whiteLog(txtPath, msg);
+
+                    webHelper.SendMsgTest(msgEntity.userId);
+                }
+                else if (msgEntity.msgType == (int)RabbitMQMsgTypeEnum.企业审核结果消息)
+                {
+                    string msg = string.Format("时间:{0},线程{1},企业审核结果消息:{2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), taskNum, message);
+                    MQHelper.whiteLog(txtPath, msg);
+
+                    webHelper.SendAccountAuditMessage(msgEntity);
+                }
+                else if (msgEntity.msgType == (int)RabbitMQMsgTypeEnum.ActivityInviteMsg)
+                {
+                    string msg = string.Format("时间:{0},线程{1},邀请用户参与速派活动，发送通知消息:{2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), taskNum, message);
+                    MQHelper.whiteLog(txtPath, msg);
+
+                    webHelper.SendActivityInviteMsg(msgEntity.activityId, out errorMsg);
+                }
+                else if (msgEntity.msgType == (int)RabbitMQMsgTypeEnum.指定手机和内容发短信)
+                {
+                    string msg = string.Format("时间:{0},线程{1},指定手机和短信内容发消息:{2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), taskNum, message);
+                    MQHelper.whiteLog(txtPath, msg);
+                    webHelper.SendMsgToUser(msgEntity.userId, msgEntity.companyId, msgEntity.paraObj, out errorMsg);
+                }
+                else //接发活儿服务消息
+                {
+                    string msg2 = string.Format("时间:{0},线程{1},接发活儿服务消息消息:{2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), taskNum, message);
+                    MQHelper.whiteLog(txtPath, msg2);
+
+                    webHelper.SendJobMsg(msgEntity.jobId, out errorMsg, msgEntity.jobStatus, msgEntity.subJobStatus, msgEntity.userId, msgEntity.companyId);
+                }
+
+                //记录错误日志（catch捕获的异常信息）
+                if (!string.IsNullOrEmpty(errorMsg))
+                {
+                    string errTxtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", string.Format("errorLog_{0}.txt", DateTime.Now.ToString("yyyyMMdd")));
+                    errorMsg += "\r\n---------------------------------------------------------------------------------------------------------------";
+                    MQHelper.whiteLog(errTxtPath, errorMsg);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                //消息只处理一次，暂用return true 
+                string txtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", string.Format("errorLog_{0}.txt", DateTime.Now.ToString("yyyyMMdd")));
+
+                string msg = string.Format("处理消息方法handleMsg抛出异常，错误信息：{0}：", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                                + Environment.NewLine + "［Message］:" + ex.Message
+                                + Environment.NewLine + "［InnerException］:" + ex.InnerException
+                                + Environment.NewLine + "［Source］:" + ex.Source
+                                + Environment.NewLine + "［TargetSite］:" + ex.TargetSite
+                                + Environment.NewLine + "［StackTrace］:" + ex.StackTrace
+                                + Environment.NewLine + " [参数]：" + JsonConvert.SerializeObject(msgEntity)
+                                + Environment.NewLine + "----------------------------------------------------------------------------------------------------------------------------";
+
+                MQHelper.whiteLog(txtPath, msg);
+                return true;
+            }
+        }
+         
+        //捕获全局错误信息
+        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                Exception ex = e.ExceptionObject as Exception;
+                string errorMsg = string.Format("来自“GK.NewBpo.RabbitMQConsumerService”的全局异常,时间：{0},详细信息如下：", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))
+                                      + Environment.NewLine + "［Message］:" + ex.Message
+                                      + Environment.NewLine + "［InnerException］:" + ex.InnerException
+                                      + Environment.NewLine + "［Source］:" + ex.Source
+                                      + Environment.NewLine + "［TargetSite］:" + ex.TargetSite
+                                      + Environment.NewLine + "［StackTrace］:" + ex.StackTrace
+                                      + Environment.NewLine + "----------------------------------------------------------------------------------------------------------------------------";
+                string errTxtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", string.Format("errorLog_{0}.txt", DateTime.Now.ToString("yyyyMMdd")));
+                MQHelper.whiteLog(errTxtPath, errorMsg);
+            }
+            catch { }
+        }
+         
+        //发送服务停止短信
+        public void SendMobileMsg()
+        {
+            try
+            {
+                string mobile = NWebConfig.ReadSetting("Error_SendMobile");
+                if (!string.IsNullOrEmpty(mobile))
+                {
+                    string[] mobileArry = mobile.Split(',');
+                    if (mobileArry != null && mobileArry.Length > 0)
+                    {
+                        string msg = "RabbitMq消费者Windows服务停止，请及时处理";
+                        msg += $"({ServiceHelper.GetEnvironment(environment)})";
+                        foreach (string phone in mobileArry)
+                        {
+                            webHelper.SendSMSMsg(phone, msg);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) { }
+        }
+
+        #region 事件方式处理消息(未用)
+        static void HandleMsg_Event(object obj)
+        {
+            para pa = obj as para;
+            bool isReject = pa.isReject;
+            int taskNum = pa.taskNum;
+
+            string errorMsg = string.Empty;
+            string exchangeName = RabbitMQReceiver.ExchangeName;
+            string exchangeType = RabbitMQReceiver.ExchangeType;
+            string queueName = RabbitMQReceiver.QueueName;
+            string routingKey = RabbitMQReceiver.RoutingKey;
+
+            #region 创建信道，接收消息进行处理
+            using (IConnection connection = RabbitMQReceiver.CreateConnection())
+            {
+                using (var channel = connection.CreateModel())
+                {
+                    RabbitMQMsgEntity msgEntity = null;
+                    string message = string.Empty;
+                    try
+                    {
+                        channel.ExchangeDeclare(exchange: exchangeName, type: exchangeType, durable: false, autoDelete: false, arguments: null);
+                        channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                        channel.QueueBind(queue: queueName, exchange: exchangeName, routingKey: routingKey);
+                        channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false); //RabbitMQ 不要在同一时间给一个工作者发送多于1条的消息
+
+                        consumer = new EventingBasicConsumer(channel);
+
+                        consumer.Received += (model, eargs) =>
+                        {
+                            try
+                            {
+                                var body = eargs.Body;
+                                message = Encoding.UTF8.GetString(body);
+                                if (!string.IsNullOrEmpty(message))
+                                {
+                                    msgEntity = JsonConvert.DeserializeObject<RabbitMQMsgEntity>(message);
+                                    if (msgEntity != null)
+                                    {
+                                        //处理消息
+                                        bool sendResult = handleMsg(taskNum, message, msgEntity);
+
+                                        if (sendResult)//处理成功
+                                        {
+                                            string txtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", "log.txt");
+                                            string msg = string.Format("时间:{2},任务{0}，成功处理消息:{1}", taskNum, message, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                                            MQHelper.whiteLog(txtPath, msg);
+
+                                            consumer.Model.BasicAck(eargs.DeliveryTag, false); //手动应答 
+                                            Thread.Sleep(500);
+                                        }
+                                        else //处理失败
+                                        {
+                                            if (isReject)
+                                            {
+                                                string txtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", "log.txt");
+                                                string msg = string.Format("时间:{2},任务{0}，处理消息失败，然后把消息退回到消息:{1}", taskNum, message, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                                                MQHelper.whiteLog(txtPath, msg);
+
+                                                //处理失败的消息重新放回到队列
+                                                channel.BasicReject(eargs.DeliveryTag, true);
+                                            }
+                                            else
+                                            {
+                                                string txtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", "log.txt");
+                                                string msg = string.Format("时间:{2},任务{0}，处理消息失败，消息添加到数据库:{1}", taskNum, message, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                                                MQHelper.whiteLog(txtPath, msg);
+
+                                                channel.BasicAck(eargs.DeliveryTag, false); //手动应答
+                                                //添加错误信息到表中
+                                                RabbitMQErrorRepository.AddRabbitMQError(new Bpo_RabbitMQError
+                                                {
+                                                    JobID = msgEntity.jobId,
+                                                    CompanyId = msgEntity.companyId,
+                                                    UserID = msgEntity.userId,
+                                                    JobStatus = msgEntity.jobStatus,
+                                                    SubJobStatus = msgEntity.subJobStatus,
+                                                    IsProducterError = true,
+                                                    CreateTime = DateTime.Now,
+                                                    MsgGuid = msgEntity.MsgGuid + ":task-" + taskNum.ToString()
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                string txtPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logdir", "log.txt");
+                                string msg = string.Format("时间:{2},任务{0}，处理消息失败,在catch里面报错:{1}&&&&&& 消息内容:{3}", taskNum, ex.Message, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), message);
+                                MQHelper.whiteLog(txtPath, msg);
+
+                                if (msgEntity != null)
+                                {
+                                    //添加错误信息到表中
+                                    RabbitMQErrorRepository.AddRabbitMQError(new Bpo_RabbitMQError
+                                    {
+                                        JobID = msgEntity.jobId,
+                                        CompanyId = msgEntity.companyId,
+                                        UserID = msgEntity.userId,
+                                        JobStatus = msgEntity.jobStatus,
+                                        SubJobStatus = msgEntity.subJobStatus,
+                                        IsProducterError = true,
+                                        CreateTime = DateTime.Now,
+                                        MsgGuid = msgEntity.MsgGuid
+                                    });
+                                }
+                            }
+                        };
+                        channel.BasicConsume(queue: queueName, autoAck: false, consumer: consumer);
+                        Console.ReadLine();
+                    }
+                    catch
+                    {
+                        //停止消费消息并退出
+                        //channel.BasicCancel(consumer_tag);
+                        //Environment.Exit(0);
+                    }
+
+                }
+            }
+            #endregion
+        }
+        #endregion
+
+        /// <summary>
+        /// 根据文件大小向文件写入内容
+        /// </summary>
+        private static System.Threading.ReaderWriterLock readWriteLock = new System.Threading.ReaderWriterLock();
+        private static bool whiteLogLimitSize(string path, string content)
+        {
+            object locker = new object();
+            readWriteLock.AcquireWriterLock(5000);
+
+            string foldername = path.Substring(0, path.LastIndexOf("\\") + 1);
+            if (!Directory.Exists(foldername))
+            {
+                Directory.CreateDirectory(foldername);
+            }
+
+            lock (locker)
+            {
+                if (File.Exists(path))
+                {
+                    FileStream readFileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                    long fileStreamSize = readFileStream.Length;
+                    readFileStream.Close();
+
+                    int fileSize = 3 * 1024 * 1024;
+                    if (fileStreamSize > fileSize)
+                    {
+                        return false;
+                    }
+                }
+
+                FileStream fs = new FileStream(path, FileMode.Append);
+                StreamWriter sw = new StreamWriter(fs);
+                //开始写入
+                sw.WriteLine(content);
+                //清空缓冲区
+                sw.Flush();
+                //关闭流
+                sw.Close();
+                fs.Close();
+
+                readWriteLock.ReleaseWriterLock();
+                return true;
+            }
+        }
+
+
+       
+
+    }
+
+    public class para
+    {
+        public bool isReject { get; set; }
+        public int taskNum { get; set; }
+    }
+}

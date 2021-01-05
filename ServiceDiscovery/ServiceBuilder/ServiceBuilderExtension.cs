@@ -15,7 +15,7 @@ namespace ServiceDiscovery
         public static IServiceBuilder CreateServiceBuilder(this IServiceProvider serviceProvider,
              Action<ServiceBuilder> config)
         {
-            var builder = new ServiceBuilder(serviceProvider);
+            ServiceBuilder builder = new ServiceBuilder(serviceProvider);
             config(builder);
             return builder;
         }
