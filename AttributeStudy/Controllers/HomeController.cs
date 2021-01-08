@@ -10,6 +10,9 @@ using Microsoft.Extensions.Options;
 
 namespace AttributeStudy.Controllers
 {
+    /// <summary>
+    /// dotnet CommonCache.dll  --urls="http://*:6001" --ip="127.0.0.1" --port=6001 
+    /// </summary>
     public class HomeController : Controller
     {
         //log的使用注入ILogger<HomeController>或ILoggerFactory
