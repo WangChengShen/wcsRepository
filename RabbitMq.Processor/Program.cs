@@ -16,6 +16,7 @@ namespace RabbitMq.Processor
                 #region 命令行参数
                 var builder = new ConfigurationBuilder()
                    .AddCommandLine(args);
+
                 var configuration = builder.Build();
                 string id = configuration["id"];
                 int.TryParse(configuration["timespan"] ?? "1", out int timeSpan);
@@ -26,7 +27,7 @@ namespace RabbitMq.Processor
 
                 //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20
                 //生产者消费者模式处理：一个消息仅有一个消费者；
-                //receive1(id, timeSpan);
+                receive1(id, timeSpan);
 
                 //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20 --queue=OrderAll
                 //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20 --queue=SMSQueue
@@ -34,7 +35,7 @@ namespace RabbitMq.Processor
                 //发布订阅模式，订阅哪个队列处理哪个队列的消息
                 //receive2(id, queueName);
 
-                receive1_rpc(id, timeSpan);
+                //receive1_rpc(id, timeSpan);
             }
             catch (Exception ex)
             {
@@ -67,12 +68,40 @@ namespace RabbitMq.Processor
                     {
                         try
                         {
+
+                            /*问题：解决消费者创建链接时队列不存在报错的问题
+                             * 
+                             消费者在处理消息时，如果处理的队列在Mq服务中不存在的话会报错，可以在连接时
+                             把队列创建出来，创建后再链接就可以了；
+                             发布消息时如果该队列如果存在的话，则直接用该队列
+                             
+                             */
+                            //声明交换机
+                            //channel.ExchangeDeclare(exchange: "OrderOnlyChange",
+                            //       type: ExchangeType.Direct,
+                            //       durable: true,
+                            //       autoDelete: false,
+                            //       arguments: null);
+
+                            ////声明队列
+                            //channel.QueueDeclare(queue: "OrderOnly",
+                            //   durable: true,
+                            //   exclusive: false,
+                            //   autoDelete: false,
+                            //   arguments:null);
+
+                            ////队列绑定到交换机
+                            //channel.QueueBind(queue: "OrderOnly",
+                            //             exchange: "OrderOnlyChange",
+                            //             routingKey: "OrderOnlyKey", arguments: null);
+
+                            //Console.BackgroundColor= ConsoleColor.Yellow;
                             var consumer = new EventingBasicConsumer(channel);
                             consumer.Received += (model, ea) =>
                             {
                                 var body = ea.Body;
                                 var message = Encoding.UTF8.GetString(body);
-                                Console.WriteLine($"消费者{id} 接受消息: {message} {Thread.CurrentThread.ManagedThreadId}");
+                                Console.WriteLine($"消费者{id} 接受消息: {message} {Thread.CurrentThread.ManagedThreadId}，优先级：{ea.BasicProperties.Priority}");
                                 Thread.Sleep(timeSpan);
                             };
 
@@ -141,7 +170,7 @@ namespace RabbitMq.Processor
                                 channel.BasicPublish("", props.ReplyTo, replyProps, responseBytes);//注意，回复是交换机名称为空，代表默认的交换机
                                 Console.WriteLine($"回复消息：{resMsg},ReplyTo={props.ReplyTo}");
 
-                                 
+
                                 /*手动应答的方式，处理过之后把消息去掉；现在用自动应答收到后把消息从队列中删除
                                  * consumer.Model.BasicAck(eargs.DeliveryTag, false); 
                                  手动应答时，处理失败时，把消息重新放回到队列
@@ -173,7 +202,7 @@ namespace RabbitMq.Processor
         }
 
         /// <summary>
-        /// 
+        /// 发布订阅模式，订阅某个队列就消费该队列
         /// </summary>
         /// <param name="id"></param>
         /// <param name="queueName"></param>
@@ -206,7 +235,10 @@ namespace RabbitMq.Processor
                                              autoDelete: false,
                                              arguments: null);
                         //绑定
-                        channel.QueueBind(queue: queueName, exchange: "OrderAllChangeFanout", routingKey: string.Empty, arguments: null);
+                        channel.QueueBind(queue: queueName,
+                            exchange: "OrderAllChangeFanout",
+                            routingKey: string.Empty,
+                            arguments: null);
 
                         //定义消费者                                      
                         var consumer = new EventingBasicConsumer(channel);
@@ -219,13 +251,18 @@ namespace RabbitMq.Processor
                         Console.WriteLine($"订阅{id}已经准备 {queueName} 就绪...");
                         //处理消息
                         channel.BasicConsume(queue: queueName,
-                                             autoAck: true,
+                                             autoAck: true,//自动应答
                                              consumer: consumer);
+
+                        /*用于阻塞程序，若不是控制台程序（如winService），不要把connection 和 channel 销废就可以了*/
                         Console.ReadLine();
                     }
                 }
             }
             #endregion
         }
+
+
+
     }
 }

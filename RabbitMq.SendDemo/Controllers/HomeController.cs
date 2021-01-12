@@ -99,14 +99,14 @@ namespace RabbitMq.SendDemo.Controllers
                     //   exclusive: false,
                     //   autoDelete: false,
                     //   arguments: null);
-                     
+
                     //声明交换机
                     channel.ExchangeDeclare(exchange: "OrderOnlyChange",
                            type: ExchangeType.Direct,
                            durable: true,
                            autoDelete: false,
                            arguments: null);
-                     
+
                     //队列绑定到交换机
                     channel.QueueBind(queue: "OrderOnly",
                                  exchange: "OrderOnlyChange",
@@ -448,6 +448,80 @@ namespace RabbitMq.SendDemo.Controllers
                     }
                 }
             }
+        }
+
+
+        /// <summary>
+        /// RabbitMq 消息优先级的使用
+        /// 优先级别高的消息被优先处理：条件是要把一批消息都发布进入队列，然后再处理，这样优先级高的会先被处理；
+        /// 如果随时发随时消费，则还是按照顺序来处理；
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult InserPriority()
+        {
+            var factory = new ConnectionFactory();
+            factory.HostName = "192.168.1.69";//RabbitMQ服务在本地运行
+            factory.UserName = "gkbpo";//用户名
+            factory.Password = "gkbpo123";//密码
+            factory.VirtualHost = "newbpo";
+            using (var connection = factory.CreateConnection())
+            {
+                using (var channel = connection.CreateModel())
+                {
+                    //声明交换机
+                    channel.ExchangeDeclare(exchange: "OrderOnlyChange",
+                           type: ExchangeType.Direct,
+                           durable: true,
+                           autoDelete: false,
+                           arguments: null);
+
+                    //声明队列
+                    channel.QueueDeclare(queue: "OrderOnly",
+                       durable: true,
+                       exclusive: false,
+                       autoDelete: false,
+                       arguments: new Dictionary<string, object> {
+                           { "x-max-priority", 10 }//指定队列支持优先级设置
+                       });
+
+                    //队列绑定到交换机
+                    channel.QueueBind(queue: "OrderOnly",
+                                 exchange: "OrderOnlyChange",
+                                 routingKey: "OrderOnlyKey", arguments: null);
+
+
+                    string[] msgArray = new string[] {
+                        "QQ VIP1:我……",
+                        "张三：abc",
+                        "李四：abc",
+                        "王二：abc",
+                        "QQ VIP2:我……"
+                    };
+                    IBasicProperties props = channel.CreateBasicProperties();
+          
+                    foreach (var msg in msgArray)
+                    {
+                        if (msg.Contains("VIP"))
+                        {
+                            props.Priority = 9; //级别越高，越先被处理
+                        }
+                        else {
+                            props.Priority = 1;
+                        }
+                        string message = msg;
+                        byte[] body = Encoding.UTF8.GetBytes(message);
+                        channel.BasicPublish(exchange: "OrderOnlyChange",
+                                        routingKey: "OrderOnlyKey",
+                                        basicProperties: props,
+                                        body: body);
+                        Console.WriteLine($"消息：{message} 已发送~");
+                    }
+
+
+                }
+            }
+
+            return Content("Success");
         }
 
         public IActionResult Privacy()
