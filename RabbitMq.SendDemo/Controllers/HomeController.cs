@@ -537,6 +537,7 @@ namespace RabbitMq.SendDemo.Controllers
         /// <summary>
         /// 场景：把info、warn、debug、error四种等级的日志记录下来；另外error等级的日志要发邮件给开发人员；
         /// 解决方案：准备两个队列，一个方info、warn、debug、error四种的消息;另一个队列再放error的消息；
+        /// 并把消息持久化下来
         /// </summary>
         /// <returns></returns>
         public IActionResult LogMsg()
@@ -551,18 +552,23 @@ namespace RabbitMq.SendDemo.Controllers
             {
                 using (IModel channel = conn.CreateModel())
                 {
+                    /*
+                     持久化(服务宕机后也不会丢失)：
+                     1、交换机要设置为持久化
+                     2、队列要设置为持久化
+                     3、消息发送时持久化
+                    */
                     //声明交换机
                     channel.ExchangeDeclare(exchange: "LogExchange",
                            type: ExchangeType.Direct,
-                           durable: true,
+                           durable: true,//1.交换机要设置为持久化
                            autoDelete: false,
                            arguments: null);
 
-                    channel.QueueDeclare("AllLogQueue", durable: true, exclusive: false,
-                   autoDelete: false, arguments: null);
+                    // 2、队列要设置为持久化
+                    channel.QueueDeclare("AllLogQueue", durable: true, exclusive: false, autoDelete: false, arguments: null);
 
-                    channel.QueueDeclare("ErrorLogQueue", durable: true, exclusive: false,
-                       autoDelete: false, arguments: null);
+                    channel.QueueDeclare("ErrorLogQueue", durable: true, exclusive: false, autoDelete: false, arguments: null);
 
                     string[] errorLevel = new string[] { "info", "warn", "debug", "error" };
                     foreach (var item in errorLevel)
@@ -610,13 +616,16 @@ namespace RabbitMq.SendDemo.Controllers
                             });
                         }
                     }
-                     
+                    IBasicProperties properties = channel.CreateBasicProperties();
                     foreach (var item in msgList)
                     {
                         byte[] body = Encoding.UTF8.GetBytes(item.LogMsg);
+
+                        properties.Persistent = true; //3.消息发送时设置持久化
+
                         channel.BasicPublish(exchange: "LogExchange",
                                            routingKey: item.LogType,
-                                           basicProperties: null, //加上basicProperties参数，绑定回复队列
+                                           basicProperties: properties, //加上basicProperties参数，绑定回复队列
                                            body: body);
 
                         Console.WriteLine($"消息：{item.LogMsg} 已发送~");
@@ -627,7 +636,119 @@ namespace RabbitMq.SendDemo.Controllers
             }
         }
 
+        /// <summary>
+        /// 1.exchange有4种：Direct,Fanout,Topic,Header
+        /// 2.Direct(根据路由键精准匹配),Fanout(忽略路由键，广播模式),
+        ///   Topic(根据路由键模糊匹配，*匹配一个单词，#匹配多个单词)；
+        /// 3.Header根据发送的消息内容的Header属性进行匹配，在绑定Queue与exchange时指定一组键值对数据以及x-match
+        ///   参数，字符串类型，可以设置为all或者any，all代表所有数据都匹配成功才会匹配成功，any是匹配上任一组数据
+        ///   即匹配成功
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult HeaderExchange()
+        {
+            #region ConnectionFactory
+            var factory = new ConnectionFactory();
+            factory.HostName = "192.168.1.69";//RabbitMQ服务在本地运行
+            factory.UserName = "gkbpo";//用户名
+            factory.Password = "gkbpo123";//密码
+            factory.VirtualHost = "newbpo";
+            #endregion
 
+            using (var conn = factory.CreateConnection())//创建连接
+            {
+                using (IModel channel = conn.CreateModel()) //创建对象
+                {
+                    //声明交换机
+                    channel.ExchangeDeclare(exchange: "HeaderExchange",
+                           type: ExchangeType.Headers,
+                           durable: true,
+                           autoDelete: false,
+                           arguments: null);
+
+                    //声明队列
+                    channel.QueueDeclare(queue: "HeaderAllQueue",
+                       durable: true,
+                       exclusive: false,
+                       autoDelete: false,
+                       arguments: null);
+
+                    //声明队列
+                    channel.QueueDeclare(queue: "HeaderAnyQueue",
+                       durable: true,
+                       exclusive: false,
+                       autoDelete: false,
+                       arguments: null);
+
+                    //队列绑定到交换机
+                    channel.QueueBind(queue: "HeaderAllQueue", exchange: "HeaderExchange", routingKey: "",
+                    arguments: new Dictionary<string, object>
+                    {
+                        //x-match是要有的，值可设置为all或any
+                        { "x-match","all"}, 
+                        //下面的参数是业务参数
+                        { "chinese","90"},
+                        { "english","80"},
+                    });
+
+
+                    //队列绑定到交换机
+                    channel.QueueBind(queue: "HeaderAnyQueue", exchange: "HeaderExchange", routingKey: "",
+                    arguments: new Dictionary<string, object>
+                    {
+                        //x-match是要有的，值可设置为all或any
+                        { "x-match","any"}, 
+                        //下面的参数是业务参数
+                        { "chinese","90"},
+                        { "english","80"},
+                    });
+
+                    {
+                        var props = channel.CreateBasicProperties();
+                        props.Headers = new Dictionary<string, object>() {
+                                                                              { "chinese","90"},
+                                                                              { "english","80"},
+                                                                          };
+
+                        /*chinese和english都相同；chinese和english也符合任一个相同；
+                         * 消息会同时发送到HeaderAnyQueue和HeaderAllQueue*/
+                        string msg = @"chinese=90;english=80";
+
+                        var body = Encoding.UTF8.GetBytes(msg);
+                        //基本发布
+                        channel.BasicPublish(exchange: "HeaderExchange",
+                                             routingKey: string.Empty,
+                                             basicProperties: props,
+                                             body: body);
+
+                        Console.WriteLine($"{msg}已发送");
+                    }
+
+                    {
+                        var props = channel.CreateBasicProperties();
+                        props.Headers = new Dictionary<string, object>() {
+                                                                              { "chinese","90"},
+                                                                              { "english","100"},
+                                                                          };
+                        /*chinese和english有一个不相同；chinese和english符合任一个相同；
+                         * 消息会发送到HeaderAnyQueue,不会发送到HeaderAllQueue
+                         */
+                        string msg = @"chinese=90；english=100；";
+
+                        var body = Encoding.UTF8.GetBytes(msg);
+                        //基本发布
+                        channel.BasicPublish(exchange: "HeaderExchange",
+                                             routingKey: string.Empty,
+                                             basicProperties: props,
+                                             body: body);
+
+                        Console.WriteLine($"{msg}已发送");
+                    }
+
+                    return Content("已发送");
+                }
+            }
+        }
 
     }
 }

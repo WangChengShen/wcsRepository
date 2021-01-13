@@ -23,7 +23,7 @@ namespace RabbitMq.Processor
                 string queueName = configuration["queue"];
                 #endregion
 
-                Console.WriteLine($"Hello World! {id}_{timeSpan}_{queueName}");
+                Console.WriteLine($"准备就绪，Id:{id};timeSpan:{timeSpan};queueName:{queueName}");
 
                 string inputStr = Console.ReadLine();
 
@@ -33,25 +33,30 @@ namespace RabbitMq.Processor
                     //生产者消费者模式处理：一个消息仅有一个消费者；
                     receive1(id, timeSpan);
                 }
+                else if (inputStr == "2")
+                {
+                    // dotnet RabbitMq.Processor.dll--id = 1--timespan = 20--queue = OrderAll
+                    //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20 --queue=SMSQueue
+                    //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20 --queue=EmailQueue
+                    //发布订阅模式，订阅哪个队列处理哪个队列的消息
+                    receive2(id, queueName);
+                }
+                else if (inputStr == "3")
+                {
+                    receive1_rpc(id, timeSpan);
+                }
                 else if (inputStr == "log")
                 {
+                    //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20 --queue=AllLogQueue
+                    //dotnet RabbitMq.Processor.dll--id = 1--timespan = 20--queue = ErrorLogQueue
                     receiveLog(queueName);
-                }
-
-                //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20 --queue=OrderAll
-                //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20 --queue=SMSQueue
-                //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20 --queue=EmailQueue
-                //发布订阅模式，订阅哪个队列处理哪个队列的消息
-                //receive2(id, queueName);
-
-                //receive1_rpc(id, timeSpan);
+                } 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
             Console.ReadLine();
-
         }
 
         /// <summary>
