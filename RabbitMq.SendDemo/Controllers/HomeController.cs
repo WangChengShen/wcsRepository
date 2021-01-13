@@ -303,6 +303,15 @@ namespace RabbitMq.SendDemo.Controllers
                               exchange: "OrderOnlyChange",
                               routingKey: "OrderOnlyKey2", arguments: null);
 
+
+                    /*重要！！！
+                     * 绑定到交换机时可以绑多个routingKey，这样一个队列就会有多个的routeKey，
+                     * 发消息是要匹配到任意一个key就会发送到该队列*/
+                    //如下：给OrderOnly2队列有绑了一个OrderOnlyKey3的key
+                    //channel.QueueBind(queue: "OrderOnly2",
+                    //      exchange: "OrderOnlyChange",
+                    //      routingKey: "OrderOnlyKey3", arguments: null);
+
                     Console.WriteLine("准备就绪,开始写入~~~");
 
                     #region 设置Rpc回复队列,定义消费者接受消息
@@ -498,14 +507,15 @@ namespace RabbitMq.SendDemo.Controllers
                         "QQ VIP2:我……"
                     };
                     IBasicProperties props = channel.CreateBasicProperties();
-          
+
                     foreach (var msg in msgArray)
                     {
                         if (msg.Contains("VIP"))
                         {
                             props.Priority = 9; //级别越高，越先被处理
                         }
-                        else {
+                        else
+                        {
                             props.Priority = 1;
                         }
                         string message = msg;
@@ -524,16 +534,100 @@ namespace RabbitMq.SendDemo.Controllers
             return Content("Success");
         }
 
-        public IActionResult Privacy()
+        /// <summary>
+        /// 场景：把info、warn、debug、error四种等级的日志记录下来；另外error等级的日志要发邮件给开发人员；
+        /// 解决方案：准备两个队列，一个方info、warn、debug、error四种的消息;另一个队列再放error的消息；
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult LogMsg()
         {
-            return View();
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.HostName = "192.168.1.69";//RabbitMQ服务在本地运行
+            factory.UserName = "gkbpo";//用户名
+            factory.Password = "gkbpo123";//密码
+            factory.VirtualHost = "newbpo";
+
+            using (IConnection conn = factory.CreateConnection())
+            {
+                using (IModel channel = conn.CreateModel())
+                {
+                    //声明交换机
+                    channel.ExchangeDeclare(exchange: "LogExchange",
+                           type: ExchangeType.Direct,
+                           durable: true,
+                           autoDelete: false,
+                           arguments: null);
+
+                    channel.QueueDeclare("AllLogQueue", durable: true, exclusive: false,
+                   autoDelete: false, arguments: null);
+
+                    channel.QueueDeclare("ErrorLogQueue", durable: true, exclusive: false,
+                       autoDelete: false, arguments: null);
+
+                    string[] errorLevel = new string[] { "info", "warn", "debug", "error" };
+                    foreach (var item in errorLevel)
+                    {
+                        //AllLogQueue,绑定所有的log等级routeKey
+                        channel.QueueBind(queue: "AllLogQueue", exchange: "LogExchange", routingKey: item, arguments: null);
+                    }
+
+                    channel.QueueBind(queue: "ErrorLogQueue", exchange: "LogExchange", routingKey: "error", arguments: null);
+
+                    List<MsgModel> msgList = new List<MsgModel>();
+
+                    for (int i = 0; i < 100; i++)
+                    {
+                        if (i % 4 == 0)
+                        {
+                            msgList.Add(new MsgModel
+                            {
+                                LogType = "info",
+                                LogMsg = $"info 日志{msgList.Count(m => m.LogType == "info") + 1}：……"
+                            });
+                        }
+                        if (i % 4 == 1)
+                        {
+                            msgList.Add(new MsgModel
+                            {
+                                LogType = "warn",
+                                LogMsg = $"warn 日志{msgList.Count(m => m.LogType == "warn") + 1}：……"
+                            });
+                        }
+                        if (i % 4 == 2)
+                        {
+                            msgList.Add(new MsgModel
+                            {
+                                LogType = "debug",
+                                LogMsg = $"debug 日志{msgList.Count(m => m.LogType == "debug") + 1}：……"
+                            });
+                        }
+                        if (i % 4 == 3)
+                        {
+                            msgList.Add(new MsgModel
+                            {
+                                LogType = "error",
+                                LogMsg = $"error 日志{msgList.Count(m => m.LogType == "error") + 1}：……"
+                            });
+                        }
+                    }
+                     
+                    foreach (var item in msgList)
+                    {
+                        byte[] body = Encoding.UTF8.GetBytes(item.LogMsg);
+                        channel.BasicPublish(exchange: "LogExchange",
+                                           routingKey: item.LogType,
+                                           basicProperties: null, //加上basicProperties参数，绑定回复队列
+                                           body: body);
+
+                        Console.WriteLine($"消息：{item.LogMsg} 已发送~");
+                    }
+
+                    return Content("成功发送");
+                }
+            }
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+
 
     }
 }

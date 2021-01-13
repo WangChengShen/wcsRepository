@@ -25,9 +25,18 @@ namespace RabbitMq.Processor
 
                 Console.WriteLine($"Hello World! {id}_{timeSpan}_{queueName}");
 
-                //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20
-                //生产者消费者模式处理：一个消息仅有一个消费者；
-                receive1(id, timeSpan);
+                string inputStr = Console.ReadLine();
+
+                if (inputStr == "1")
+                {
+                    //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20
+                    //生产者消费者模式处理：一个消息仅有一个消费者；
+                    receive1(id, timeSpan);
+                }
+                else if (inputStr == "log")
+                {
+                    receiveLog(queueName);
+                }
 
                 //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20 --queue=OrderAll
                 //dotnet RabbitMq.Processor.dll  --id=1 --timespan=20 --queue=SMSQueue
@@ -262,6 +271,83 @@ namespace RabbitMq.Processor
             #endregion
         }
 
+        /// <summary>
+        ///生产者消费者模式处理：一个消息仅有一个消费者；
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="timeSpan"></param>
+        static void receiveLog(string queue)
+        {
+            #region 生产者消费者
+            {
+                #region ConnectionFactory
+                var factory = new ConnectionFactory();
+                factory.HostName = "192.168.1.69";//RabbitMQ服务在本地运行
+                factory.UserName = "gkbpo";//用户名
+                factory.Password = "gkbpo123";//密码
+                factory.VirtualHost = "newbpo";
+                #endregion
+
+                using (var connection = factory.CreateConnection())
+                {
+                    using (var channel = connection.CreateModel())
+                    {
+                        try
+                        {
+
+                            /*问题：解决消费者创建链接时队列不存在报错的问题
+                             * 
+                             消费者在处理消息时，如果处理的队列在Mq服务中不存在的话会报错，可以在连接时
+                             把队列创建出来，创建后再链接就可以了；
+                             发布消息时如果该队列如果存在的话，则直接用该队列 
+                             */
+                            //声明交换机
+                            channel.ExchangeDeclare(exchange: "LogExchange",
+                                   type: ExchangeType.Direct,
+                                   durable: true,
+                                   autoDelete: false,
+                                   arguments: null);
+
+                            channel.QueueDeclare("AllLogQueue", durable: true, exclusive: false,
+                           autoDelete: false, arguments: null);
+
+                            channel.QueueDeclare("ErrorLogQueue", durable: true, exclusive: false,
+                               autoDelete: false, arguments: null);
+
+                            string[] errorLevel = new string[] { "info", "warn", "debug", "error" };
+                            foreach (var item in errorLevel)
+                            {
+                                //AllLogQueue,绑定所有的log等级routeKey
+                                channel.QueueBind(queue: "AllLogQueue", exchange: "LogExchange", routingKey: item, arguments: null);
+                            }
+
+                            channel.QueueBind(queue: "ErrorLogQueue", exchange: "LogExchange", routingKey: "error", arguments: null);
+
+                            //Console.BackgroundColor= ConsoleColor.Yellow;
+                            var consumer = new EventingBasicConsumer(channel);
+                            consumer.Received += (model, ea) =>
+                            {
+                                var body = ea.Body;
+                                var message = Encoding.UTF8.GetString(body);
+                                Console.WriteLine($" 接受消息: {message} ");
+                            };
+
+                            channel.BasicConsume(queue: queue,
+                                         autoAck: true,
+                                         consumer: consumer);
+
+                            Console.WriteLine(" Press [enter] to exit.");
+                            Console.ReadLine();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
+                }
+            }
+            #endregion
+        }
 
 
     }
