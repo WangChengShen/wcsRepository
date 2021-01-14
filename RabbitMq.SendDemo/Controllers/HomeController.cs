@@ -750,5 +750,78 @@ namespace RabbitMq.SendDemo.Controllers
             }
         }
 
+        /// <summary>
+        /// 秒杀
+        /// dotnet RabbitMq.SendDemo.dll  --urls="http://*:6001" --ip="127.0.0.1" --port=6001 --minute=50
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult SecKill(int clientId)
+        {
+            #region ConnectionFactory
+            var factory = new ConnectionFactory();
+            factory.HostName = "192.168.1.69";//RabbitMQ服务在本地运行
+            factory.UserName = "gkbpo";//用户名
+            factory.Password = "gkbpo123";//密码
+            factory.VirtualHost = "newbpo";
+            #endregion
+
+            using (var conn = factory.CreateConnection())//创建连接
+            {
+                using (IModel channel = conn.CreateModel()) //创建对象
+                {
+                    //声明队列
+                    channel.QueueDeclare(queue: "SecKillQueue",
+                       durable: false,
+                       exclusive: false,
+                       autoDelete: false,
+                       arguments: null);
+
+                    //声明交换机
+                    channel.ExchangeDeclare(exchange: "SecKillChange",
+                           type: ExchangeType.Direct,
+                           durable: true,
+                           autoDelete: false,
+                           arguments: null);
+
+                    //队列绑定到交换机
+                    channel.QueueBind(queue: "SecKillQueue",
+                                 exchange: "SecKillChange",
+                                 routingKey: "SecKillKey", arguments: null);
+
+                    int minute = Convert.ToInt32(this.configuration["minute"]);
+
+                    Console.WriteLine($"{minute}分开始秒杀~~~");
+
+                    int num = 0;
+                    while (true)
+                    {
+                        if (DateTime.Now.Minute >= minute)
+                        {
+                            if (num > 100)
+                            {
+                                Console.WriteLine($"客户端{clientId}结束");
+                                break;
+                            }
+                            else
+                            {
+                                num++;
+                                string message = $"客户{clientId}_{num}提交了秒杀";
+
+                                byte[] body = Encoding.UTF8.GetBytes(message);
+                                channel.BasicPublish(exchange: "SecKillChange",
+                                                routingKey: "SecKillKey",
+                                                basicProperties: null,
+                                                body: body);
+
+                                Console.WriteLine($"时间：{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.SSS")},{message}  ");
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            return Content("success");
+        }
     }
 }
