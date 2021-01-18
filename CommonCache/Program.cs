@@ -22,9 +22,16 @@ namespace CommonCache
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+            .ConfigureLogging(option =>
+            {
+                //添加Log4Net
+                //引入Microsoft.Extensions.Logging.Log4Net.AspNetCore
+                //在program里面配置注册，或则在StartUp文件里面注册
+                option.AddLog4Net();
+            })
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
     }
 }

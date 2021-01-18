@@ -19,9 +19,10 @@ namespace AttributeStudy.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ILoggerFactory loggerFactory;
 
-        private readonly IOptions<AppSetting> _appSetting;
+        //读取参数时用IOptions时，修改配置文件后不会自动加载，IOptionsSnapshot可以
+        private readonly IOptionsSnapshot<AppSetting> _appSetting;
         private readonly IOptions<Logging> _logging;
-        public HomeController(ILogger<HomeController> logger, IOptions<AppSetting> appSetting, IOptions<Logging> logging, ILoggerFactory loggerFactory)
+        public HomeController(ILogger<HomeController> logger, IOptionsSnapshot<AppSetting> appSetting, IOptions<Logging> logging, ILoggerFactory loggerFactory)
         {
             _logger = logger;
             _appSetting = appSetting;

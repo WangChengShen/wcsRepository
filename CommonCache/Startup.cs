@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CommonCache.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -87,6 +88,11 @@ namespace CommonCache
             app.UseRouting();
 
             app.UseAuthorization();
+
+            //调用自定义的中间件
+            //app.UseMiddleware<ExceptionHandleMiddleware>();
+            //或者封装为扩展方法
+            app.UseExceptionHandle();
 
             //ResponseCaching
             app.UseResponseCaching();

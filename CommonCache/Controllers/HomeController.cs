@@ -101,6 +101,9 @@ namespace CommonCache.Controllers
 
         public IActionResult Privacy()
         {
+            int a = 0;
+            int b = 1;
+            var result = b / a;
             return View();
         }
 
