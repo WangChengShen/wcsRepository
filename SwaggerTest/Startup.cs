@@ -56,7 +56,7 @@ namespace SwaggerTest
                 //string path = Path.Combine(System.IO.Directory.GetCurrentDirectory(), $"bin\\Debug\\netcoreapp3.1\\DotnetCore.xml");
                 string path = Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location), "SwaggerTest.xml");//
 
-                option.IncludeXmlComments(path);
+                option.IncludeXmlComments(path,true);//第二个参数includeControllerXmlComments：true参数，设置是否包括控制器的注释
             });
 
             //设置允许跨域，所有的请求，需要add一下，use一下，然后可以在控制器或方法上打EnableCors("any")标签，如果要禁用跨域使用DisableCors特性

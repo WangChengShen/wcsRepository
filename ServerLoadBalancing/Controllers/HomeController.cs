@@ -26,6 +26,7 @@ namespace ServerLoadBalancing.Controllers
         /// Nginx for windows  官网：http://nginx.org/en/download.html
         /// 到Nginx的目录下面cmd进入到命令行模式：
         /// 启动Nginx命令：start nignx.exe 
+        /// 杀死Nginx进程：taskkill /IM  nginx.exe  /F
         /// *******************************************************************
         /// 把站点启动三个实例，分别是：5726，5727，5728
         /// 然后配置Nginx配置负载均衡转发到这三个站点实例上面，通过观察页面的地址和参数看结果
