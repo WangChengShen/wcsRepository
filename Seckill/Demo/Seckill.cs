@@ -56,6 +56,7 @@ namespace RedisDemo
         {
             using (RedisClient redisClient = new RedisClient("127.0.0.1", 6379))
             {
+                 
                 //ServiceStack的例子，stock在存的时候要用int值，不然会报错
                 redisClient.Set<int>("stock", 10);
             }

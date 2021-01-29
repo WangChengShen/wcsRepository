@@ -10,7 +10,7 @@ namespace RedisDemo
     class Program
     {
         /// <summary>
-        /// dotnet RedisDemo.dll --id=1 --minute=10
+        /// dotnet RedisDemo.dll --id=1 --minute=04
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
@@ -41,7 +41,7 @@ namespace RedisDemo
             else if (inputStr == "DistributedLock")
             {
                 //3.分布式锁
-                RedisDistributedLock.Skills(minute, 15);
+                RedisDistributedLockDemo.Skills(minute, 30);
             }
             else if (inputStr == "PublishMsg") //发布消息
             {
@@ -51,7 +51,10 @@ namespace RedisDemo
             {
                 RedisMq.SubscriptionMsg();
             }
-
+            else
+            {
+                RedisDistributedLockDemo.Skills(minute, 30);
+            }
 
 
         }

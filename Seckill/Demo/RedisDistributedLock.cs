@@ -6,17 +6,19 @@ using System.Threading;
 using System.Data.SqlClient;
 using System.Linq;
 using StackExchange.Redis;
+using RedisDemo.Demo;
+using RedisDemo.DAL;
 
 namespace RedisDemo
 {
     /// <summary>
     /// redis实现分布式锁
     /// </summary>
-    public class RedisDistributedLock
+    public class RedisDistributedLockDemo
     {
         private static object obj_lock = new object();
-        public static void Skills(int minute,int theadCount)
-        { 
+        public static void Skills(int minute, int theadCount)
+        {
             Console.WriteLine($"在{minute}分0秒开始抢购");
             //SkillProduct();
             //return;
@@ -75,77 +77,52 @@ namespace RedisDemo
 
             //V3：Redis实现分布式锁（推荐）在多个进程里面也能防止超卖
             {
-                //RedisLock redisLock = new RedisLock();
-                //redisLock.Lock();
+                RedisDistributedLock redisLock = new RedisDistributedLock();
+                redisLock.Lock();
+                int currentThreadId = Thread.CurrentThread.ManagedThreadId;
+                int stock = ProductDAL.GetProductStock();
+                if (stock <= 0)
+                {
+                    Console.WriteLine($"{currentThreadId}:不好意思，您没有秒杀到");
+                    redisLock.UnLock();
+                    return;
+                }
 
-                //int stock = GetStock();
-                //if (stock <= 0)
-                //{
-                //    Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}:不好意思，您没有秒杀到");
-                //    redisLock.UnLock();
-                //    return;
-                //}
-                //UpdateStock();
-                //Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}:恭喜您，成功秒杀到商品,商品编号：{stock}");
+                if (ProductDAL.UpdateProductStock())
+                {
+                    OrderDAL.AddOrder(1, currentThreadId, DateTime.Now);
+                } 
 
-                //redisLock.UnLock();
+                Console.WriteLine($"{currentThreadId}:恭喜您，成功秒杀到商品,商品编号：{stock}");
+
+                redisLock.UnLock();
             }
 
             //V4（推荐）用redis执行命令时时单线程的特性 StringDecrement 自动减1，进行实现秒杀
             {
+                //读取库存数到redis
                 //int stock = GetStock();
                 //RedisHelper.SetStringValue("stock", $"{stock}");
-                long result = RedisHelper.StringDecrement("stock");
-                if (result >= 0)
-                {
-                    //会打印出stock条抢购成功的
-                    Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}:恭喜您，成功秒杀到商品,商品编号：{result}");
-                }
-                else
-                {
-                    Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}:不好意思，您没有秒杀到");
-                } 
+
+                //long result = RedisHelper.StringDecrement("stock");
+                //if (result >= 0)
+                //{
+                //    //会打印出stock条抢购成功的
+                //    Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}:恭喜您，成功秒杀到商品,商品编号：{result}");
+                //}
+                //else
+                //{
+                //    Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}:不好意思，您没有秒杀到");
+                //} 
             }
         }
 
-        public static string connStr= @"Data Source=DESKTOP-GCL6M23\WCSSQL;Initial Catalog=Wcs.Db;User ID=sa;Password=123456;timeout=14400;";
-        public static int GetStock()
-        { 
-            using (SqlConnection conn = new SqlConnection(connStr))
-            {
-                conn.Open();
-                SqlCommand comm = conn.CreateCommand();
-                comm.CommandText = "select top 1 stock from Product ";
-                int reader = Convert.ToInt32(comm.ExecuteScalar());
-                return reader;
-            }
-        }
 
-        public static bool UpdateStock()
-        { 
-            using (SqlConnection conn = new SqlConnection(connStr))
-            {
-                conn.Open();
-                SqlCommand comm = conn.CreateCommand();
-                comm.CommandText = "update Product set Stock=Stock-1  ";
-                return comm.ExecuteNonQuery() > 0;
-            }
-        }
-        public static bool UpdateStock(long stock)
-        {
-            using (SqlConnection conn = new SqlConnection(connStr))
-            {
-                conn.Open();
-                SqlCommand comm = conn.CreateCommand();
-                comm.CommandText = $"update Product set Stock={stock}  ";
-                return comm.ExecuteNonQuery() > 0;
-            }
-        }
 
     }
 
 
-    public class RedisLock
+    public class RedisDistributedLock
     {
         /*四要素
          1.锁名
@@ -156,7 +133,7 @@ namespace RedisDemo
 
         private ConnectionMultiplexer connectionMultiplexer = null;
         private IDatabase database = null;
-        public RedisLock()
+        public RedisDistributedLock()
         {
             string connection = "127.0.0.1:6379";
             connectionMultiplexer = ConnectionMultiplexer.Connect(connection);
