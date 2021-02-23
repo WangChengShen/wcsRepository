@@ -283,7 +283,7 @@ namespace RabbitMq.Processor
         }
 
         /// <summary>
-        ///生产者消费者模式处理：一个消息仅有一个消费者；
+        ///处理日志的消费者
         /// </summary>
         /// <param name="id"></param>
         /// <param name="timeSpan"></param>

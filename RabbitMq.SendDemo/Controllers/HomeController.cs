@@ -307,7 +307,8 @@ namespace RabbitMq.SendDemo.Controllers
                     /*重要！！！
                      * 绑定到交换机时可以绑多个routingKey，这样一个队列就会有多个的routeKey，
                      * 发消息是要匹配到任意一个key就会发送到该队列*/
-                    //如下：给OrderOnly2队列有绑了一个OrderOnlyKey3的key
+
+                    //如下：给OrderOnly2队列又绑了一个OrderOnlyKey3的key
                     //channel.QueueBind(queue: "OrderOnly2",
                     //      exchange: "OrderOnlyChange",
                     //      routingKey: "OrderOnlyKey3", arguments: null);
@@ -404,7 +405,7 @@ namespace RabbitMq.SendDemo.Controllers
                 {
                     //声明交换机，
                     channel.ExchangeDeclare(exchange: "OrderAllChangeFanout",
-                          type: ExchangeType.Fanout,
+                          type: ExchangeType.Fanout, //fanout模式，忽略路由键，会把消息发送到绑定到该交换机上面的所有的队列
                           durable: true,
                           autoDelete: false,
                           arguments: null);
@@ -462,7 +463,7 @@ namespace RabbitMq.SendDemo.Controllers
 
         /// <summary>
         /// RabbitMq 消息优先级的使用
-        /// 优先级别高的消息被优先处理：条件是要把一批消息都发布进入队列，然后再处理，这样优先级高的会先被处理；
+        /// 优先级别高的消息被优先处理：条件是要把一批消息都发布进入队列，然后再打开消费者端处理，这样优先级高的会先被处理；
         /// 如果随时发随时消费，则还是按照顺序来处理；
         /// </summary>
         /// <returns></returns>
@@ -536,7 +537,7 @@ namespace RabbitMq.SendDemo.Controllers
 
         /// <summary>
         /// 场景：把info、warn、debug、error四种等级的日志记录下来；另外error等级的日志要发邮件给开发人员；
-        /// 解决方案：准备两个队列，一个方info、warn、debug、error四种的消息;另一个队列再放error的消息；
+        /// 解决方案：准备两个队列，一个放info、warn、debug、error四种的消息;另一个队列再放error的消息；
         /// 并把消息持久化下来
         /// </summary>
         /// <returns></returns>
@@ -579,8 +580,8 @@ namespace RabbitMq.SendDemo.Controllers
 
                     channel.QueueBind(queue: "ErrorLogQueue", exchange: "LogExchange", routingKey: "error", arguments: null);
 
-                    List<MsgModel> msgList = new List<MsgModel>();
-
+                    //组装测试数据
+                    List<MsgModel> msgList = new List<MsgModel>(); 
                     for (int i = 0; i < 100; i++)
                     {
                         if (i % 4 == 0)
@@ -711,7 +712,7 @@ namespace RabbitMq.SendDemo.Controllers
                                                                           };
 
                         /*chinese和english都相同；chinese和english也符合任一个相同；
-                         * 消息会同时发送到HeaderAnyQueue和HeaderAllQueue*/
+                         * 所以消息会同时发送到HeaderAnyQueue和HeaderAllQueue*/
                         string msg = @"chinese=90;english=80";
 
                         var body = Encoding.UTF8.GetBytes(msg);
@@ -731,7 +732,7 @@ namespace RabbitMq.SendDemo.Controllers
                                                                               { "english","100"},
                                                                           };
                         /*chinese和english有一个不相同；chinese和english符合任一个相同；
-                         * 消息会发送到HeaderAnyQueue,不会发送到HeaderAllQueue
+                         * 所以消息会发送到HeaderAnyQueue,不会发送到HeaderAllQueue
                          */
                         string msg = @"chinese=90；english=100；";
 
